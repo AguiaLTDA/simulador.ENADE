@@ -1,13 +1,14 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { configSupabase } from "./env";
 
 // Cliente para Server Components, Server Functions e Route Handlers.
 export async function createClient() {
   const cookieStore = await cookies();
+  const { url, key, problema } = configSupabase();
+  if (problema) throw new Error(`Configuração do Supabase: ${problema}`);
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+  return createServerClient(url, key,
     {
       cookies: {
         getAll() {
