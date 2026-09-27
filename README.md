@@ -6,8 +6,8 @@ Stack: Next.js (Vercel) + Supabase (Postgres, Auth) + Resend (SMTP do Supabase A
 ## Status
 
 - [x] Sprint 1 — schema Postgres, RLS, motor de pontuação, seed da `config`
-- [x] Sprint 2 — magic link + cadastro por CPF/data de nascimento/telefone
-- [ ] Sprint 3 — painel admin (CRUD + import CSV)
+- [x] Sprint 2 — magic link + cadastro livre do aluno (um cadastro por CPF)
+- [~] Sprint 3 — painel admin: CRUD de questões com gabarito e peso (falta import CSV)
 - [ ] Sprint 4 — Treino Livre
 - [ ] Sprint 5 — ranking, badges, perfil
 - [ ] Sprint 6 — simulado cronometrado + relatórios
@@ -30,12 +30,13 @@ npm run dev
 3. **Authentication > Emails > Templates**: cole `supabase/templates/magic_link.html` em
    *Magic Link* e *Confirm signup*.
 
-## Base acadêmica
+## Cadastro do aluno
 
-`matriculas_autorizadas` precisa de: matricula, nome, curso (ENG_MEC | ENG_PROD | ADS),
-turma, tipo (CONCLUINTE | INGRESSANTE), cpf (11 dígitos, válido) e data_nascimento.
-O aluno se cadastra informando CPF + data de nascimento (conferidos com essa base) e
-telefone. Limites: 5 falhas/hora por conta e 10 falhas/dia por CPF.
+Cadastro livre: no primeiro acesso o aluno informa nome, CPF, data de nascimento,
+telefone, curso, turma, situação (concluinte/ingressante) e, opcionalmente, a matrícula.
+Um cadastro por CPF (e por matrícula, quando informada). A coordenação pode bloquear
+contas alterando `estudantes.status` para `BLOQUEADO`.
+A tabela `matriculas_autorizadas` não é mais usada.
 
 ## Banco de dados
 

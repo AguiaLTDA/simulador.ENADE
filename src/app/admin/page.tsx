@@ -1,30 +1,55 @@
-import { redirect } from "next/navigation";
-import { Cabecalho } from "@/components/cabecalho";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { destinoInicial, obterContexto } from "@/lib/contexto";
+import { obterContexto } from "@/lib/contexto";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminPage() {
   const ctx = await obterContexto();
-  if (!ctx.staff) redirect(destinoInicial(ctx));
+  const supabase = await createClient();
+
+  const contar = async (tabela: "questoes" | "estudantes", filtro?: [string, string]) => {
+    let q = supabase.from(tabela).select("*", { count: "exact", head: true });
+    if (filtro) q = q.eq(filtro[0], filtro[1]);
+    const { count } = await q;
+    return count ?? 0;
+  };
+
+  const [publicadas, rascunhos, alunos] = await Promise.all([
+    contar("questoes", ["status", "PUBLICADA"]),
+    contar("questoes", ["status", "RASCUNHO"]),
+    contar("estudantes"),
+  ]);
 
   return (
     <>
-      <Cabecalho
-        nome={ctx.staff.nome}
-        detalhe={ctx.staff.papel === "ADMIN" ? "Coordenação / NDE" : "Docente"}
-      />
-      <main className="mx-auto w-full max-w-5xl space-y-6 px-4 py-8">
-        <h1 className="text-2xl font-semibold tracking-tight">Painel da coordenação</h1>
-        <Card>
-          <CardHeader>
-            <CardTitle>Em construção</CardTitle>
-            <CardDescription>
-              Banco de questões, importação CSV, simulados, correção de discursivas e relatórios
-              chegam nos próximos sprints.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </main>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Painel da coordenação</h1>
+          <p className="text-muted-foreground">Olá, {ctx.staff?.nome}.</p>
+        </div>
+        {ctx.staff?.papel === "ADMIN" && (
+          <Link href="/admin/questoes/nova" className={buttonVariants()}>
+            Nova questão
+          </Link>
+        )}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        {[
+          ["Questões publicadas", publicadas, "Visíveis para os alunos no treino"],
+          ["Rascunhos", rascunhos, "Ainda não visíveis para os alunos"],
+          ["Alunos cadastrados", alunos, "Contas de estudantes criadas"],
+        ].map(([titulo, valor, dica]) => (
+          <Card key={String(titulo)}>
+            <CardHeader>
+              <CardDescription>{titulo}</CardDescription>
+              <CardTitle className="text-3xl tabular-nums">{valor}</CardTitle>
+              <p className="text-xs text-muted-foreground">{dica}</p>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
     </>
   );
 }

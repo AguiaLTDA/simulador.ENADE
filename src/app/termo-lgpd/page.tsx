@@ -19,12 +19,9 @@ export default function TermoLgpdPage() {
         <h3 className="font-semibold">1. Dados tratados</h3>
         <ul className="list-disc space-y-1 pl-5">
           <li>E-mail pessoal, usado para login.</li>
-          <li>
-            CPF e data de nascimento, usados só para confirmar que você é estudante da UNIVC,
-            comparando com o cadastro da secretaria acadêmica.
-          </li>
+          <li>Nome, CPF e data de nascimento, para identificar você e evitar cadastros duplicados.</li>
           <li>Telefone, para contato da coordenação sobre simulados e o ENADE.</li>
-          <li>Nome, matrícula, curso, turma e tipo (concluinte/ingressante), vindos do sistema acadêmico.</li>
+          <li>Curso, turma, matrícula (opcional) e situação no ENADE (concluinte/ingressante).</li>
           <li>Respostas, tempos de resposta, pontuação, conquistas e datas de acesso.</li>
         </ul>
 

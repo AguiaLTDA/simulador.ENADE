@@ -18,8 +18,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <CardHeader>
           <CardTitle>Entrar</CardTitle>
           <CardDescription>
-            Use o seu e-mail pessoal. No primeiro acesso vamos confirmar seus dados com a
-            secretaria acadêmica.
+            Use o seu e-mail pessoal. No primeiro acesso você completa o seu cadastro.
           </CardDescription>
         </CardHeader>
         <CardContent>

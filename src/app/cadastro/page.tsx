@@ -16,8 +16,8 @@ export default async function CadastroPage() {
         <CardHeader>
           <CardTitle>Primeiro acesso</CardTitle>
           <CardDescription>
-            Vamos conferir seus dados com o cadastro da secretaria acadêmica. Seu nome, curso e
-            turma vêm de lá automaticamente.
+            Complete seus dados para começar a treinar. Eles aparecem no seu perfil e nos
+            relatórios da coordenação.
           </CardDescription>
         </CardHeader>
         <CardContent>

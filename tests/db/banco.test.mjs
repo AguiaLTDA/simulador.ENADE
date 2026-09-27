@@ -65,14 +65,6 @@ before(async () => {
     ($1, 'Coordenação', 'ADMIN'), ($2, 'Docente', 'DOCENTE')`, [u.admin, u.docente]);
 
   u.forca1  = await criarUsuario(db, 'forca1@gmail.com');
-  u.forca2  = await criarUsuario(db, 'forca2@gmail.com');
-  u.vitima  = await criarUsuario(db, 'vitima@gmail.com');
-
-  await db.exec(`insert into public.matriculas_autorizadas (matricula, nome, curso, turma, tipo, cpf, data_nascimento) values
-    ('2021001', 'Ana Mecânica',  'ENG_MEC',  'MEC-2021', 'CONCLUINTE',  '12345678909', '2000-03-15'),
-    ('2021002', 'Bia ADS',       'ADS',      'ADS-2021', 'CONCLUINTE',  '98765432100', '1999-11-02'),
-    ('2021003', 'Caio Produção', 'ENG_PROD', 'PROD-2021','INGRESSANTE', '11144477735', '2004-07-30'),
-    ('2021004', 'Dora Vítima',   'ADS',      'ADS-2021', 'CONCLUINTE',  '22233366638', '2001-01-20')`);
 
   q.fg       = await criarQuestao({ componente: 'FG', cursos: '{ALL}', eixo: 'Ética', dificuldade: 2, gabarito: 'B' });
   q.fg2      = await criarQuestao({ componente: 'FG', cursos: '{ALL}', eixo: 'Sustentabilidade', dificuldade: 1, gabarito: 'A' });
@@ -109,7 +101,7 @@ test('anon não lê nenhuma tabela nem chama RPCs', async () => {
       await erro(db.query(`select * from public.${t}`), /permission denied/);
     }
     await erro(db.query(`select public.exibir_questao($1)`, [q.fg]), /permission denied/);
-    await erro(db.query(`select public.concluir_cadastro('12345678909', '2000-03-15', '27999991234', true)`), /permission denied/);
+    await erro(db.query(`select public.concluir_cadastro('Ana Mecânica', '12345678909', '2000-03-15', '27999991234', 'ENG_MEC', 'MEC', 'CONCLUINTE', null, true)`), /permission denied/);
   });
 });
 
@@ -121,26 +113,30 @@ test('funções internas não são executáveis pelo aluno', async () => {
 });
 
 // ---------------------------------------------------------------------------
-async function cadastrar(uid, cpf, nasc, tel, lgpd = true) {
-  const { rows } = await como(db, uid, () =>
-    db.query(`select public.concluir_cadastro($1, $2::date, $3, $4) as r`, [cpf, nasc, tel, lgpd]));
+const ALUNO_PADRAO = {
+  nome: 'Aluno Teste', cpf: '52998224725', nasc: '2000-01-01', tel: '27999990000',
+  curso: 'ADS', turma: 'ADS-2023', tipo: 'CONCLUINTE', matricula: null, lgpd: true,
+};
+
+async function cadastrar(uid, dados = {}) {
+  const d = { ...ALUNO_PADRAO, ...dados };
+  const { rows } = await como(db, uid, () => db.query(
+    `select public.concluir_cadastro($1, $2, $3::date, $4, $5::public.curso, $6, $7::public.tipo_estudante, $8, $9) as r`,
+    [d.nome, d.cpf, d.nasc, d.tel, d.curso, d.turma, d.tipo, d.matricula, d.lgpd]));
   return rows[0].r;
 }
 
-test('cadastro: validações de formato e LGPD', async () => {
-  assert.equal((await cadastrar(u.mec, '12345678909', '2000-03-15', '27999991234', false)).codigo, 'LGPD_OBRIGATORIO');
-  assert.equal((await cadastrar(u.mec, '12345678900', '2000-03-15', '27999991234')).codigo, 'CPF_INVALIDO');
-  assert.equal((await cadastrar(u.mec, '11111111111', '2000-03-15', '27999991234')).codigo, 'CPF_INVALIDO');
-  assert.equal((await cadastrar(u.mec, '12345678909', '2000-03-15', '9999')).codigo, 'TELEFONE_INVALIDO');
-  assert.equal((await cadastrar(u.mec, '12345678909', '2030-01-01', '27999991234')).codigo, 'DATA_INVALIDA');
-});
-
-test('cadastro: CPF fora da base e data errada dão a MESMA resposta', async () => {
-  const fora = await cadastrar(u.mec, '52998224725', '2000-03-15', '27999991234');
-  const data = await cadastrar(u.mec, '12345678909', '2000-03-16', '27999991234');
-  assert.equal(fora.codigo, 'DADOS_NAO_CONFEREM');
-  assert.equal(data.codigo, 'DADOS_NAO_CONFEREM');
-  assert.equal(fora.mensagem, data.mensagem);
+test('cadastro livre: validações de formato e LGPD', async () => {
+  const cod = async (dados) => (await cadastrar(u.mec, dados)).codigo;
+  assert.equal(await cod({ lgpd: false }), 'LGPD_OBRIGATORIO');
+  assert.equal(await cod({ nome: 'Ana' }), 'NOME_INVALIDO');
+  assert.equal(await cod({ cpf: '12345678900' }), 'CPF_INVALIDO');
+  assert.equal(await cod({ cpf: '11111111111' }), 'CPF_INVALIDO');
+  assert.equal(await cod({ tel: '9999' }), 'TELEFONE_INVALIDO');
+  assert.equal(await cod({ nasc: '2030-01-01' }), 'DATA_INVALIDA');
+  assert.equal(await cod({ turma: '   ' }), 'TURMA_INVALIDA');
+  assert.equal(await cod({ curso: null }), 'CURSO_INVALIDO');
+  assert.equal(await cod({ tipo: null }), 'TIPO_INVALIDO');
 });
 
 test('usuário sem cadastro não acessa questões', async () => {
@@ -149,44 +145,44 @@ test('usuário sem cadastro não acessa questões', async () => {
   });
 });
 
-test('cadastro válido: aceita CPF/telefone formatados e copia dados da base', async () => {
-  const r = await cadastrar(u.mec, '123.456.789-09', '2000-03-15', '(27) 99999-1234');
-  assert.equal(r.ok, true);
-  assert.equal(r.estudante.nome, 'Ana Mecânica');
+test('cadastro livre: aluno informa os próprios dados, sem pré-cadastro', async () => {
+  const r = await cadastrar(u.mec, {
+    nome: '  Ana   Mecânica ', cpf: '123.456.789-09', nasc: '2000-03-15', tel: '(27) 99999-1234',
+    curso: 'ENG_MEC', turma: ' mec-2021 ', tipo: 'CONCLUINTE', matricula: '2021001',
+  });
+  assert.equal(r.ok, true, JSON.stringify(r));
   const e = (await db.query(`select * from public.estudantes where id = $1`, [u.mec])).rows[0];
+  assert.equal(e.nome, 'Ana Mecânica');
   assert.equal(e.email_pessoal, 'aluno.mec@gmail.com');
+  assert.equal(e.cpf, '12345678909');
   assert.equal(e.matricula, '2021001');
   assert.equal(e.curso, 'ENG_MEC');
+  assert.equal(e.turma, 'MEC-2021');
   assert.equal(e.telefone, '27999991234');
   assert.equal(e.status, 'ATIVO');
-  assert.equal(e.consentimento_lgpd, true);
-  assert.ok(e.consentimento_data);
+  assert.ok(e.consentimento_lgpd && e.consentimento_data);
 
-  assert.equal((await cadastrar(u.ads, '98765432100', '1999-11-02', '2733334444')).ok, true);
-  assert.equal((await cadastrar(u.prod, '11144477735', '2004-07-30', '27988887777')).ok, true);
+  // Matrícula é opcional
+  assert.equal((await cadastrar(u.ads, { nome: 'Bia ADS Silva', cpf: '98765432100', curso: 'ADS' })).ok, true);
+  assert.equal((await cadastrar(u.prod, { nome: 'Caio Produção', cpf: '11144477735', curso: 'ENG_PROD',
+                                          turma: 'PROD-2024', tipo: 'INGRESSANTE' })).ok, true);
 });
 
-test('cadastro: CPF já vinculado e cadastro repetido', async () => {
-  assert.equal((await cadastrar(u.intruso, '12345678909', '2000-03-15', '27999990000')).codigo, 'JA_VINCULADO');
-  assert.equal((await cadastrar(u.mec, '12345678909', '2000-03-15', '27999991234')).codigo, 'CADASTRO_EXISTENTE');
+test('cadastro livre: um cadastro por CPF e por matrícula', async () => {
+  assert.equal((await cadastrar(u.intruso, { cpf: '12345678909' })).codigo, 'JA_VINCULADO');
+  assert.equal((await cadastrar(u.intruso, { cpf: '22233366638', matricula: '2021001' })).codigo, 'MATRICULA_EM_USO');
+  assert.equal((await cadastrar(u.mec, { cpf: '12345678909' })).codigo, 'CADASTRO_EXISTENTE');
 });
 
-test('cadastro: limite de 5 falhas por hora por conta', async () => {
+test('cadastro livre: conta da coordenação não vira aluno', async () => {
+  assert.equal((await cadastrar(u.admin, { cpf: '22233366638' })).codigo, 'CONTA_STAFF');
+});
+
+test('cadastro livre: limite de 5 conflitos por hora por conta', async () => {
   for (let i = 0; i < 5; i++) {
-    assert.equal((await cadastrar(u.forca1, '22233366638', `1990-01-0${i + 1}`, '27999990000')).codigo, 'DADOS_NAO_CONFEREM');
+    assert.equal((await cadastrar(u.forca1, { cpf: '12345678909' })).codigo, 'JA_VINCULADO');
   }
-  // Mesmo com os dados certos, a conta está bloqueada por 1 hora.
-  assert.equal((await cadastrar(u.forca1, '22233366638', '2001-01-20', '27999990000')).codigo, 'LIMITE_TENTATIVAS');
-});
-
-test('cadastro: limite de 10 falhas por dia por CPF (várias contas)', async () => {
-  for (let i = 0; i < 5; i++) {
-    await cadastrar(u.forca2, '22233366638', `1991-02-0${i + 1}`, '27999990000');
-  }
-  // 10 falhas acumuladas para o CPF: nem a dona real consegue sem a coordenação.
-  assert.equal((await cadastrar(u.vitima, '22233366638', '2001-01-20', '27999990000')).codigo, 'LIMITE_TENTATIVAS');
-  const n = (await db.query(`select count(*)::int n from public.estudantes where matricula = '2021004'`)).rows[0].n;
-  assert.equal(n, 0);
+  assert.equal((await cadastrar(u.forca1, { cpf: '22233366638' })).codigo, 'LIMITE_TENTATIVAS');
 });
 
 test('tentativas de cadastro: aluno não lê; CPF não fica em claro', async () => {
@@ -194,7 +190,14 @@ test('tentativas de cadastro: aluno não lê; CPF não fica em claro', async () 
     assert.equal((await db.query(`select * from public.tentativas_cadastro`)).rows.length, 0);
   });
   const { rows } = await db.query(`select cpf_hash from public.tentativas_cadastro`);
-  assert.ok(rows.length > 0 && rows.every((r) => !r.cpf_hash || !r.cpf_hash.includes('22233366638')));
+  assert.ok(rows.length > 0 && rows.every((r) => !r.cpf_hash || !r.cpf_hash.includes('12345678909')));
+});
+
+test('aluno não lê CPF de outros alunos', async () => {
+  await como(db, u.ads, async () => {
+    const { rows } = await db.query(`select cpf from public.estudantes`);
+    assert.deepEqual(rows.map((r) => r.cpf), ['98765432100']);
+  });
 });
 
 test('meu_contexto identifica staff, estudante e sem cadastro', async () => {

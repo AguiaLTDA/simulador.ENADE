@@ -1,13 +1,8 @@
 import { redirect } from "next/navigation";
+import type { Curso } from "@/lib/cursos";
 import { createClient } from "@/lib/supabase/server";
 
-export type Curso = "ENG_MEC" | "ENG_PROD" | "ADS";
-
-export const NOME_CURSO: Record<Curso, string> = {
-  ENG_MEC: "Engenharia Mecânica",
-  ENG_PROD: "Engenharia de Produção",
-  ADS: "Análise e Desenvolvimento de Sistemas",
-};
+export { NOME_CURSO } from "@/lib/cursos";
 
 export type Contexto = {
   email: string;
@@ -39,4 +34,12 @@ export function destinoInicial(ctx: Contexto): string {
   if (!ctx.estudante) return "/cadastro";
   if (ctx.estudante.status !== "ATIVO") return "/acesso-bloqueado";
   return "/inicio";
+}
+
+// Para páginas da coordenação que editam conteúdo (papel ADMIN).
+export async function exigirAdmin(): Promise<Contexto & { staff: NonNullable<Contexto["staff"]> }> {
+  const ctx = await obterContexto();
+  if (!ctx.staff) redirect(destinoInicial(ctx));
+  if (ctx.staff.papel !== "ADMIN") redirect("/admin");
+  return ctx as Contexto & { staff: NonNullable<Contexto["staff"]> };
 }
