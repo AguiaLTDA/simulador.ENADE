@@ -6,11 +6,36 @@ Stack: Next.js (Vercel) + Supabase (Postgres, Auth) + Resend (SMTP do Supabase A
 ## Status
 
 - [x] Sprint 1 — schema Postgres, RLS, motor de pontuação, seed da `config`
-- [ ] Sprint 2 — magic link + cadastro validado
+- [x] Sprint 2 — magic link + cadastro por CPF/data de nascimento/telefone
 - [ ] Sprint 3 — painel admin (CRUD + import CSV)
 - [ ] Sprint 4 — Treino Livre
 - [ ] Sprint 5 — ranking, badges, perfil
 - [ ] Sprint 6 — simulado cronometrado + relatórios
+
+## Rodar o app localmente
+
+```bash
+cp .env.example .env.local   # preencha URL e publishable key do Supabase
+npm install
+npm run dev
+```
+
+## Configuração do Supabase Auth (painel)
+
+1. **Authentication > URL Configuration**: Site URL = URL da Vercel; em Redirect URLs
+   adicione `https://<dominio>/auth/confirm` e `http://localhost:3000/auth/confirm`.
+2. **Authentication > Emails > SMTP Settings** (Resend): host `smtp.resend.com`, porta
+   `465`, usuário `resend`, senha = API key do Resend, remetente
+   `nao-responda@aguiaunivc.site`.
+3. **Authentication > Emails > Templates**: cole `supabase/templates/magic_link.html` em
+   *Magic Link* e *Confirm signup*.
+
+## Base acadêmica
+
+`matriculas_autorizadas` precisa de: matricula, nome, curso (ENG_MEC | ENG_PROD | ADS),
+turma, tipo (CONCLUINTE | INGRESSANTE), cpf (11 dígitos, válido) e data_nascimento.
+O aluno se cadastra informando CPF + data de nascimento (conferidos com essa base) e
+telefone. Limites: 5 falhas/hora por conta e 10 falhas/dia por CPF.
 
 ## Banco de dados
 

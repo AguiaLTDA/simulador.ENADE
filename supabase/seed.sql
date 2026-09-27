@@ -1,10 +1,11 @@
 -- Dados de DESENVOLVIMENTO (rodam só em `supabase db reset` local).
 -- A config e o catálogo de conquistas de produção estão nas migrations.
 
-insert into public.matriculas_autorizadas (matricula, nome, curso, turma, tipo) values
-  ('DEV0001', 'Estudante Mecânica (dev)', 'ENG_MEC',  'MEC-DEV',  'CONCLUINTE'),
-  ('DEV0002', 'Estudante Produção (dev)', 'ENG_PROD', 'PROD-DEV', 'CONCLUINTE'),
-  ('DEV0003', 'Estudante ADS (dev)',      'ADS',      'ADS-DEV',  'CONCLUINTE')
+insert into public.matriculas_autorizadas (matricula, nome, curso, turma, tipo, cpf, data_nascimento) values
+  -- CPFs fictícios (dígitos verificadores válidos)
+  ('DEV0001', 'Estudante Mecânica (dev)', 'ENG_MEC',  'MEC-DEV',  'CONCLUINTE', '12345678909', '2000-01-01'),
+  ('DEV0002', 'Estudante Produção (dev)', 'ENG_PROD', 'PROD-DEV', 'CONCLUINTE', '98765432100', '2000-01-01'),
+  ('DEV0003', 'Estudante ADS (dev)',      'ADS',      'ADS-DEV',  'CONCLUINTE', '11144477735', '2000-01-01')
 on conflict (matricula) do nothing;
 
 do $$

@@ -1,0 +1,18 @@
+<!--
+  Template do e-mail "Magic Link" do Supabase Auth.
+  Colar em: Supabase > Authentication > Emails > Templates > Magic Link
+  (e também em "Confirm signup", pois o 1º acesso de um e-mail novo usa esse template).
+  Assunto sugerido: Seu link de acesso — Simulado ENADE UNIVC
+-->
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 480px; margin: 0 auto; color: #171717;">
+  <p style="font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: #737373;">UNIVC · Portal Simulado ENADE</p>
+  <h2 style="margin: 8px 0 16px;">Seu link de acesso</h2>
+  <p>Toque no botão abaixo para entrar no portal. O link vale por 1 hora e só pode ser usado uma vez.</p>
+  <p style="margin: 24px 0;">
+    <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email"
+       style="background: #171717; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; display: inline-block;">
+      Entrar no Simulado ENADE
+    </a>
+  </p>
+  <p style="font-size: 13px; color: #737373;">Se você não pediu este acesso, ignore este e-mail.</p>
+</div>
