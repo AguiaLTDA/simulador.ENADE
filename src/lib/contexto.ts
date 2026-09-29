@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
-import type { Curso } from "@/lib/cursos";
+import type { Curso, Papel } from "@/lib/cursos";
 import { createClient } from "@/lib/supabase/server";
 
 export { NOME_CURSO } from "@/lib/cursos";
 
 export type Contexto = {
   email: string;
-  staff: { nome: string; papel: "ADMIN" | "DOCENTE" } | null;
+  staff: { nome: string; papel: Papel; cursos: Curso[] | null } | null;
   estudante: {
     nome: string;
     curso: Curso;
@@ -36,10 +36,25 @@ export function destinoInicial(ctx: Contexto): string {
   return "/inicio";
 }
 
-// Para páginas da coordenação que editam conteúdo (papel ADMIN).
-export async function exigirAdmin(): Promise<Contexto & { staff: NonNullable<Contexto["staff"]> }> {
+type ContextoStaff = Contexto & { staff: NonNullable<Contexto["staff"]> };
+
+// Páginas que editam conteúdo: administração geral ou coordenador de curso.
+export async function exigirGestor(): Promise<ContextoStaff> {
   const ctx = await obterContexto();
   if (!ctx.staff) redirect(destinoInicial(ctx));
+  if (ctx.staff.papel === "DOCENTE") redirect("/admin");
+  return ctx as ContextoStaff;
+}
+
+// Páginas só da administração geral (equipe, configuração).
+export async function exigirAdminGeral(): Promise<ContextoStaff> {
+  const ctx = await exigirGestor();
   if (ctx.staff.papel !== "ADMIN") redirect("/admin");
-  return ctx as Contexto & { staff: NonNullable<Contexto["staff"]> };
+  return ctx;
+}
+
+export async function exigirStaff(): Promise<ContextoStaff> {
+  const ctx = await obterContexto();
+  if (!ctx.staff) redirect(destinoInicial(ctx));
+  return ctx as ContextoStaff;
 }

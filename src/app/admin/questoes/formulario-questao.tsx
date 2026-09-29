@@ -29,10 +29,12 @@ export function FormularioQuestao({
   inicial,
   pesos,
   eixos,
+  cursosPermitidos,
 }: {
   inicial: DadosQuestao;
   pesos: PesosPadrao;
   eixos: string[];
+  cursosPermitidos: Curso[];
 }) {
   const router = useRouter();
   const [q, setQ] = useState<DadosQuestao>(inicial);
@@ -117,10 +119,12 @@ export function FormularioQuestao({
               <fieldset className="space-y-2">
                 <legend className="text-sm font-medium">Cursos</legend>
                 <p className="text-xs text-muted-foreground">
-                  Marque Mecânica e Produção juntas para o núcleo comum de engenharia.
+                  {cursosPermitidos.includes("ENG_MEC") && cursosPermitidos.includes("ENG_PROD")
+                    ? "Marque Mecânica e Produção juntas para o núcleo comum de engenharia."
+                    : "Aparecem apenas os cursos que você coordena."}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {(Object.keys(NOME_CURSO) as Curso[]).map((c) => (
+                  {cursosPermitidos.map((c) => (
                     <label
                       key={c}
                       className="flex cursor-pointer items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm has-checked:border-primary"

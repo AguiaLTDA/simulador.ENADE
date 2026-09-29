@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { exigirAdmin } from "@/lib/contexto";
+import { exigirGestor } from "@/lib/contexto";
 import type { DadosQuestao } from "@/lib/questoes";
 import { createClient } from "@/lib/supabase/server";
 
@@ -9,7 +9,7 @@ export type ResultadoAcao = { erro?: string; id?: string; resultado?: string };
 
 // A validação completa (e a checagem de ADMIN) é feita de novo em salvar_questao.
 export async function salvarQuestao(dados: DadosQuestao): Promise<ResultadoAcao> {
-  await exigirAdmin();
+  await exigirGestor();
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("salvar_questao", { p_dados: dados });
   if (error) return { erro: error.message };
@@ -19,7 +19,7 @@ export async function salvarQuestao(dados: DadosQuestao): Promise<ResultadoAcao>
 }
 
 export async function excluirQuestao(id: string): Promise<ResultadoAcao> {
-  await exigirAdmin();
+  await exigirGestor();
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("excluir_questao", { p_id: id });
   if (error) return { erro: error.message };

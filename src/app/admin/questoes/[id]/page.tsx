@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { exigirAdmin } from "@/lib/contexto";
-import type { Curso } from "@/lib/cursos";
+import { exigirGestor } from "@/lib/contexto";
+import { CURSOS, type Curso } from "@/lib/cursos";
 import type { DadosQuestao } from "@/lib/questoes";
 import { createClient } from "@/lib/supabase/server";
 import { carregarEixos, carregarPesos } from "../dados";
@@ -10,7 +10,7 @@ import { FormularioQuestao } from "../formulario-questao";
 export const metadata = { title: "Editar questão — Portal Simulado ENADE" };
 
 export default async function EditarQuestaoPage({ params }: PageProps<"/admin/questoes/[id]">) {
-  await exigirAdmin();
+  const ctx = await exigirGestor();
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
 
@@ -53,7 +53,12 @@ export default async function EditarQuestaoPage({ params }: PageProps<"/admin/qu
         </Link>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">Editar questão</h1>
       </div>
-      <FormularioQuestao inicial={inicial} pesos={pesos} eixos={eixos} />
+      <FormularioQuestao
+        inicial={inicial}
+        pesos={pesos}
+        eixos={eixos}
+        cursosPermitidos={ctx.staff.cursos ?? CURSOS}
+      />
     </>
   );
 }

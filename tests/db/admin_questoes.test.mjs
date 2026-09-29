@@ -29,7 +29,7 @@ before(async () => {
   u.admin   = await criarUsuario(db, 'coord@univc.edu.br');
   u.docente = await criarUsuario(db, 'docente@univc.edu.br');
   u.aluno   = await criarUsuario(db, 'aluno@gmail.com');
-  await db.query(`insert into public.staff (user_id, nome, papel) values ($1, 'Coord', 'ADMIN'), ($2, 'Doc', 'DOCENTE')`,
+  await db.query(`insert into public.staff (user_id, nome, papel, cursos) values ($1, 'Coord', 'ADMIN', null), ($2, 'Doc', 'DOCENTE', '{ENG_MEC,ENG_PROD,ADS,VET,ARQ}')`,
     [u.admin, u.docente]);
   await como(db, u.aluno, () => db.query(
     `select public.concluir_cadastro('Aluno Mecânica', '12345678909', '2000-01-01', '27999990000',

@@ -61,8 +61,8 @@ before(async () => {
   u.intruso = await criarUsuario(db, 'intruso@gmail.com');
   u.semCad  = await criarUsuario(db, 'semcadastro@gmail.com');
 
-  await db.query(`insert into public.staff (user_id, nome, papel) values
-    ($1, 'Coordenação', 'ADMIN'), ($2, 'Docente', 'DOCENTE')`, [u.admin, u.docente]);
+  await db.query(`insert into public.staff (user_id, nome, papel, cursos) values
+    ($1, 'Coordenação', 'ADMIN', null), ($2, 'Docente', 'DOCENTE', '{ENG_MEC,ENG_PROD,ADS,VET,ARQ}')`, [u.admin, u.docente]);
 
   u.forca1  = await criarUsuario(db, 'forca1@gmail.com');
 
@@ -85,8 +85,8 @@ test('RLS ativado em todas as tabelas de public', async () => {
   assert.deepEqual(rows, []);
 });
 
-test('seed da config com as 9 chaves e valores iniciais', async () => {
-  const { rows } = await db.query(`select chave, valor from public.config order by chave`);
+test('seed da config com as chaves de pontuação e valores iniciais', async () => {
+  const { rows } = await db.query(`select chave, valor from public.config where chave not like 'diagnostico%' and chave <> 'pontos_diagnostico' order by chave`);
   const cfg = Object.fromEntries(rows.map((r) => [r.chave, Number(r.valor)]));
   assert.deepEqual(cfg, {
     bonus_tempo_max: 1, bonus_tempo_min: 0.7, limite_bonus_tempo_seg: 120, multiplicador_fg: 1.3,

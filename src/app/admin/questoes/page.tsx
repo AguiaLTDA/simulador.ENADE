@@ -5,8 +5,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { exigirAdmin } from "@/lib/contexto";
-import { NOME_CURSO, SIGLA_CURSO, type Curso } from "@/lib/cursos";
+import { exigirGestor } from "@/lib/contexto";
+import { CURSOS, SIGLA_CURSO, type Curso } from "@/lib/cursos";
 import { NOME_DIFICULDADE, NOME_STATUS, type StatusQuestao } from "@/lib/questoes";
 import { createClient } from "@/lib/supabase/server";
 
@@ -39,7 +39,8 @@ type Linha = {
 };
 
 export default async function QuestoesPage({ searchParams }: PageProps<"/admin/questoes">) {
-  await exigirAdmin();
+  const ctx = await exigirGestor();
+  const cursosDoFiltro = ctx.staff.cursos ?? CURSOS;
   const sp = await searchParams;
   const filtro = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : "");
   const status = filtro("status");
@@ -98,7 +99,7 @@ export default async function QuestoesPage({ searchParams }: PageProps<"/admin/q
         </NativeSelect>
         <NativeSelect name="curso" defaultValue={curso} aria-label="Curso">
           <option value="">Todos os cursos</option>
-          {(Object.keys(NOME_CURSO) as Curso[]).map((c) => (
+          {cursosDoFiltro.map((c) => (
             <option key={c} value={c}>
               {SIGLA_CURSO[c]}
             </option>

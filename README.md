@@ -1,6 +1,6 @@
 # Portal Simulado ENADE — UNIVC
 
-Treino gamificado para o ENADE (Engenharia Mecânica, Engenharia de Produção e ADS).
+Treino gamificado para o ENADE: Eng. Mecânica, Eng. de Produção, ADS, Medicina Veterinária e Arquitetura e Urbanismo.
 Stack: Next.js (Vercel) + Supabase (Postgres, Auth) + Resend (SMTP do Supabase Auth).
 
 ## Status
@@ -9,7 +9,8 @@ Stack: Next.js (Vercel) + Supabase (Postgres, Auth) + Resend (SMTP do Supabase A
 - [x] Sprint 2 — magic link + cadastro livre do aluno (um cadastro por CPF)
 - [~] Sprint 3 — painel admin: CRUD de questões com gabarito e peso (falta import CSV)
 - [ ] Sprint 4 — Treino Livre
-- [ ] Sprint 5 — ranking, badges, perfil
+- [~] Sprint 5 — perfil do aluno, badges e diagnóstico inicial prontos (falta ranking)
+- [x] Extra — coordenadores por curso (VET, ARQ, Engenharias+ADS) e convites da equipe
 - [ ] Sprint 6 — simulado cronometrado + relatórios
 
 ## Rodar o app localmente
