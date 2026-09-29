@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { configSupabase } from "./env";
 
 // Rotas acessíveis sem login.
-const ROTAS_PUBLICAS = ["/login", "/auth", "/termo-lgpd"];
+const ROTAS_PUBLICAS = ["/login", "/recuperar-senha", "/auth", "/termo-lgpd"];
 
 export async function updateSession(request: NextRequest) {
   const { url, key, problema } = configSupabase();

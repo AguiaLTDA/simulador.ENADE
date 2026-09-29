@@ -1,47 +1,33 @@
 "use client";
 
-import { useActionState } from "react";
-import { MailCheck } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Link from "next/link";
+import { useActionState, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { enviarLink, type EstadoLogin } from "./actions";
+import { entrar, type EstadoLogin } from "./actions";
 
-export function FormularioLogin({ erroLink }: { erroLink: boolean }) {
-  const [estado, acao, pendente] = useActionState<EstadoLogin, FormData>(enviarLink, {
-    status: "inicial",
-  });
-
-  if (estado.status === "enviado") {
-    return (
-      <Alert>
-        <MailCheck />
-        <AlertTitle>Confira seu e-mail</AlertTitle>
-        <AlertDescription>
-          Enviamos um link de acesso para <strong>{estado.email}</strong>. Abra o e-mail e toque
-          no link para entrar. Se não chegar em alguns minutos, olhe a caixa de spam.
-        </AlertDescription>
-      </Alert>
-    );
-  }
+export function FormularioLogin({ aviso }: { aviso?: "link" | "senha-criada" }) {
+  const [estado, acao, pendente] = useActionState<EstadoLogin, FormData>(entrar, {});
+  const [verSenha, setVerSenha] = useState(false);
 
   return (
     <form action={acao} className="space-y-4">
-      {erroLink && estado.status === "inicial" && (
+      {aviso === "link" && !estado.erro && (
         <Alert variant="destructive">
-          <AlertDescription>
-            O link expirou ou já foi usado. Peça um novo abaixo.
-          </AlertDescription>
+          <AlertDescription>O link expirou ou já foi usado. Peça um novo em “Primeiro acesso ou esqueci minha senha”.</AlertDescription>
         </Alert>
       )}
-      {estado.status === "erro" && (
+      {estado.erro && (
         <Alert variant="destructive">
-          <AlertDescription>{estado.mensagem}</AlertDescription>
+          <AlertDescription>{estado.erro}</AlertDescription>
         </Alert>
       )}
+
       <div className="space-y-2">
-        <Label htmlFor="email">E-mail pessoal</Label>
+        <Label htmlFor="email">E-mail</Label>
         <Input
           id="email"
           name="email"
@@ -53,12 +39,38 @@ export function FormularioLogin({ erroLink }: { erroLink: boolean }) {
           required
         />
       </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="senha">Senha</Label>
+        <div className="relative">
+          <Input
+            id="senha"
+            name="senha"
+            type={verSenha ? "text" : "password"}
+            autoComplete="current-password"
+            className="pr-10"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setVerSenha((v) => !v)}
+            className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground"
+            aria-label={verSenha ? "Ocultar senha" : "Mostrar senha"}
+          >
+            {verSenha ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
+        </div>
+      </div>
+
       <Button type="submit" className="w-full" disabled={pendente}>
-        {pendente ? "Enviando..." : "Receber link de acesso"}
+        {pendente ? "Entrando..." : "Entrar"}
       </Button>
-      <p className="text-center text-xs text-muted-foreground">
-        Sem senha: você entra pelo link que chega no seu e-mail.
-      </p>
+
+      <div className="text-center">
+        <Link href="/recuperar-senha" className="text-sm font-medium underline underline-offset-4">
+          Primeiro acesso ou esqueci minha senha
+        </Link>
+      </div>
     </form>
   );
 }

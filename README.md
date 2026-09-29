@@ -6,7 +6,7 @@ Stack: Next.js (Vercel) + Supabase (Postgres, Auth) + Resend (SMTP do Supabase A
 ## Status
 
 - [x] Sprint 1 — schema Postgres, RLS, motor de pontuação, seed da `config`
-- [x] Sprint 2 — magic link + cadastro livre do aluno (um cadastro por CPF)
+- [x] Sprint 2 — login com e-mail e senha (link por e-mail para criar/redefinir) + cadastro livre (um cadastro por CPF)
 - [~] Sprint 3 — painel admin: CRUD de questões com gabarito e peso (falta import CSV)
 - [ ] Sprint 4 — Treino Livre
 - [~] Sprint 5 — perfil do aluno, badges e diagnóstico inicial prontos (falta ranking)
@@ -29,7 +29,12 @@ npm run dev
    `465`, usuário `resend`, senha = API key do Resend, remetente
    `nao-responda@aguiaunivc.site`.
 3. **Authentication > Emails > Templates**: cole `supabase/templates/magic_link.html` em
-   *Magic Link* e *Confirm signup*.
+   *Magic Link* e *Confirm signup* (é o e-mail de "Primeiro acesso ou esqueci minha senha").
+4. **Authentication > Providers > Email**: manter *Email* habilitado e definir
+   *Minimum password length* = 8.
+
+Login: e-mail + senha. "Primeiro acesso ou esqueci minha senha" envia um link
+(signInWithOtp) que leva a `/definir-senha`; nenhuma senha é enviada por e-mail.
 
 ## Cadastro do aluno
 

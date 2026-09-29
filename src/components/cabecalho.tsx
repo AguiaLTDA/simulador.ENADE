@@ -13,6 +13,9 @@ export function Cabecalho({ nome, detalhe }: { nome: string; detalhe?: string })
             <span className="block font-medium leading-tight">{nome}</span>
             {detalhe && <span className="block text-xs text-muted-foreground">{detalhe}</span>}
           </span>
+          <Link href="/definir-senha" className="hidden text-muted-foreground hover:text-foreground sm:inline">
+            Alterar senha
+          </Link>
           <BotaoSair />
         </div>
       </div>
