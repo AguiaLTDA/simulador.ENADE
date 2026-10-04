@@ -131,7 +131,11 @@ export default async function PerfilPage() {
         </section>
 
         <p className="text-sm text-muted-foreground">
-          Em breve aqui: mapa de desempenho por eixo, evolução ao longo do tempo e sua posição no ranking.
+          Veja sua posição na{" "}
+          <Link href="/ranking" className="text-primary hover:underline">
+            classificação
+          </Link>
+          . Em breve aqui: mapa de desempenho por eixo e evolução ao longo do tempo.
         </p>
       </main>
     </>

@@ -9,7 +9,7 @@ Stack: Next.js (Vercel) + Supabase (Postgres, Auth) + Resend (SMTP do Supabase A
 - [x] Sprint 2 — login com e-mail e senha (link por e-mail para criar/redefinir) + cadastro livre (um cadastro por CPF)
 - [x] Sprint 3 — painel admin: CRUD de questões com gabarito e peso + importação por planilha CSV
 - [ ] Sprint 4 — Treino Livre
-- [~] Sprint 5 — perfil do aluno, badges e diagnóstico inicial prontos (falta ranking)
+- [x] Sprint 5 — perfil do aluno, badges, diagnóstico inicial e classificação (aluno e coordenação)
 - [x] Extra — coordenadores por curso (VET, ARQ, Engenharias+ADS) e convites da equipe
 - [x] Sprint 6 — simulado cronometrado + relatórios (por aluno, por eixo e por questão; exportação CSV)
 - [x] Extra — correção de discursivas pela equipe docente
@@ -92,6 +92,15 @@ npm run test:db
   a coordenação anula a tentativa atual com motivo e, se o simulado já encerrou, um prazo
   individual. A tentativa anulada fica no histórico; questões já respondidas não pontuam
   de novo.
+
+## Classificação
+
+- Aluno (`/ranking`): posição no curso, na turma ou entre todos os cursos; desde o início,
+  últimos 30 ou 7 dias. Colegas aparecem como "Maria S." (primeiro nome + inicial).
+- Coordenação (`/admin/ranking`): nomes completos, pontos, questões, % de acerto, simulados
+  e última atividade, com filtros por curso, turma, situação e período, e exportação CSV.
+- Pontos = respostas + discursivas corrigidas + pontos extras. Pontos de simulado só contam
+  quando o gabarito é liberado ao aluno (antes disso revelariam o acerto durante a prova).
 
 ## Decisões de segurança
 

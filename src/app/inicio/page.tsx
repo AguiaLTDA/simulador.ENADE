@@ -52,7 +52,7 @@ export default async function InicioPage() {
           </div>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Link href="/perfil" className="rounded-xl transition-shadow hover:shadow-md">
             <Card className="h-full">
               <CardHeader>
@@ -71,6 +71,14 @@ export default async function InicioPage() {
                     {simuladosAbertos} disponível(is) agora
                   </p>
                 )}
+              </CardHeader>
+            </Card>
+          </Link>
+          <Link href="/ranking" className="rounded-xl transition-shadow hover:shadow-md">
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle>Classificação</CardTitle>
+                <CardDescription>Sua posição no curso, na turma e entre todos os cursos.</CardDescription>
               </CardHeader>
             </Card>
           </Link>

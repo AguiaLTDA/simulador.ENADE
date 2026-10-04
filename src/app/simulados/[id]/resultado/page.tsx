@@ -152,8 +152,13 @@ export default async function ResultadoPage({ params }: PageProps<"/simulados/[i
           </Card>
           <Card>
             <CardHeader>
-              <CardDescription>Pontos no ranking</CardDescription>
+              <CardDescription>Pontos na classificação</CardDescription>
               <CardTitle className="text-3xl tabular-nums">+{d.pontos}</CardTitle>
+              {!r.gabarito_liberado && (
+                <p className="text-xs text-muted-foreground">
+                  Entram na classificação em {formatarDataHora(r.sessao.fim)}, com o gabarito.
+                </p>
+              )}
               {r.media_participantes !== null && (
                 <p className="text-xs text-muted-foreground">
                   Média dos {r.participantes} participantes: {formatarNota(r.media_participantes)}

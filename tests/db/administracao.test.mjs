@@ -123,7 +123,10 @@ test('nova tentativa: anula a anterior, guarda histórico e recomeça do zero', 
     assert.ok(r1.registrada);
     await db.query(`select public.finalizar_simulado($1)`, [sid]);
   });
-  const pontosAntes = (await um(u.vet, `select (public.meu_resumo()->>'pontos')::int p`)).p;
+  // Pontos gravados (no resumo do aluno só aparecem quando o gabarito é liberado).
+  const pontosGravados = async () => (await db.query(
+    `select coalesce(sum(pontos_ganhos), 0)::int p from public.respostas where estudante_id = $1`, [u.vet])).rows[0].p;
+  const pontosAntes = await pontosGravados();
   assert.ok(pontosAntes > 0);
 
   await como(db, u.vet, () =>
@@ -154,7 +157,7 @@ test('nova tentativa: anula a anterior, guarda histórico e recomeça do zero', 
   });
 
   // Questão já respondida na tentativa anulada não pontua de novo; a inédita pontua.
-  const pontosDepois = (await um(u.vet, `select (public.meu_resumo()->>'pontos')::int p`)).p;
+  const pontosDepois = await pontosGravados();
   assert.ok(pontosDepois > pontosAntes);
 
   const rev = (await um(u.coordVet, `select public.revisao_simulado_aluno($1, $2) as j`, [sid, u.vet])).j;
