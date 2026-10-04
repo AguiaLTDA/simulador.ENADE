@@ -137,7 +137,7 @@ export default async function RelatorioPage({ params }: PageProps<"/admin/simula
         </CardHeader>
         <CardContent className="overflow-x-auto">
           {r.participantes.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum aluno iniciou este simulado ainda.</p>
+            <p className="text-sm text-muted-foreground">Nenhum aluno com tentativa em curso ou concluída.</p>
           ) : (
             <Table>
               <TableHeader>
@@ -160,7 +160,14 @@ export default async function RelatorioPage({ params }: PageProps<"/admin/simula
                     return (
                       <TableRow key={p.estudante_id}>
                         <TableCell className="font-medium">
-                          {p.nome}
+                          <Link href={`/admin/simulados/${id}/aluno/${p.estudante_id}`} className="hover:underline">
+                            {p.nome}
+                          </Link>
+                          {p.tentativa > 1 && (
+                            <Badge variant="secondary" className="ml-1.5">
+                              {p.tentativa}ª tentativa
+                            </Badge>
+                          )}
                           <span className="block text-xs font-normal text-muted-foreground">
                             {SIGLA_CURSO[p.curso]} · {p.tipo === "CONCLUINTE" ? "Concluinte" : "Ingressante"}
                           </span>
@@ -194,6 +201,21 @@ export default async function RelatorioPage({ params }: PageProps<"/admin/simula
           )}
           {pendentes > 0 && (
             <p className="mt-2 text-xs text-muted-foreground">* Nota parcial: há discursivas aguardando correção.</p>
+          )}
+          {r.aguardando_nova_tentativa.length > 0 && (
+            <div className="mt-4 rounded-lg border border-dashed p-3 text-sm">
+              <p className="font-medium">Nova tentativa liberada, aguardando o aluno</p>
+              <ul className="mt-1 space-y-1 text-muted-foreground">
+                {r.aguardando_nova_tentativa.map((a) => (
+                  <li key={a.estudante_id}>
+                    <Link href={`/admin/simulados/${id}/aluno/${a.estudante_id}`} className="hover:underline">
+                      {a.nome}
+                    </Link>{" "}
+                    · {a.turma} · até {formatarDataHora(a.fim)}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </CardContent>
       </Card>

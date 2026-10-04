@@ -28,6 +28,28 @@ export async function salvarSimulado(dados: DadosSimulado): Promise<ResultadoAca
   return { id: data as string };
 }
 
+// Anula a tentativa atual do aluno (fica no histórico) e permite recomeçar.
+export async function liberarNovaTentativa(
+  sessaoId: string,
+  estudanteId: string,
+  motivo: string,
+  prazo: string | null, // ISO com fuso; null = até o encerramento do simulado
+): Promise<ResultadoAcao> {
+  await exigirGestor();
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("liberar_nova_tentativa", {
+    p_sessao_id: sessaoId,
+    p_estudante_id: estudanteId,
+    p_motivo: motivo,
+    p_prazo: prazo,
+  });
+  if (error) return { erro: error.message };
+  revalidatePath(`/admin/simulados/${sessaoId}/aluno/${estudanteId}`);
+  revalidatePath(`/admin/simulados/${sessaoId}/relatorio`);
+  revalidatePath(`/admin/alunos/${estudanteId}`);
+  return {};
+}
+
 export async function excluirSimulado(id: string): Promise<ResultadoAcao> {
   await exigirGestor();
   const supabase = await createClient();

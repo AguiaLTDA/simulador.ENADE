@@ -7,12 +7,14 @@ Stack: Next.js (Vercel) + Supabase (Postgres, Auth) + Resend (SMTP do Supabase A
 
 - [x] Sprint 1 — schema Postgres, RLS, motor de pontuação, seed da `config`
 - [x] Sprint 2 — login com e-mail e senha (link por e-mail para criar/redefinir) + cadastro livre (um cadastro por CPF)
-- [~] Sprint 3 — painel admin: CRUD de questões com gabarito e peso (falta import CSV)
+- [x] Sprint 3 — painel admin: CRUD de questões com gabarito e peso + importação por planilha CSV
 - [ ] Sprint 4 — Treino Livre
 - [~] Sprint 5 — perfil do aluno, badges e diagnóstico inicial prontos (falta ranking)
 - [x] Extra — coordenadores por curso (VET, ARQ, Engenharias+ADS) e convites da equipe
 - [x] Sprint 6 — simulado cronometrado + relatórios (por aluno, por eixo e por questão; exportação CSV)
 - [x] Extra — correção de discursivas pela equipe docente
+- [x] Extra — administração: edição de perfis de alunos com auditoria, configuração de pesos
+      pela tela, nova tentativa de simulado liberada pela coordenação, revisão por aluno
 
 ## Rodar o app localmente
 
@@ -76,6 +78,20 @@ npm run test:db
 - Nota estimada (0–100) com os pesos do ENADE: FG 25% (objetivas 60%, discursivas 40%)
   e CE 75% (objetivas 85%, discursivas 15%). Em branco conta como erro.
 - Docentes corrigem as discursivas em `/admin/correcoes`.
+
+## Administração
+
+- `/admin/alunos`: coordenação edita perfil (nome, CPF, curso, turma, status...) dos alunos
+  dos seus cursos; ADMIN edita qualquer um e faz a exclusão LGPD. Toda alteração fica em
+  `auditoria` (só os campos que mudaram).
+- `/admin/configuracoes` (ADMIN): pesos da pontuação, bônus, sequência, nota ENADE e
+  diagnóstico, com limites validados em `salvar_config`.
+- `/admin/questoes/importar`: planilha CSV (modelo para baixar); o banco confere linha a
+  linha antes, e a importação é tudo ou nada.
+- Nova tentativa de simulado: na revisão do aluno (`/admin/simulados/<id>/aluno/<aluno>`),
+  a coordenação anula a tentativa atual com motivo e, se o simulado já encerrou, um prazo
+  individual. A tentativa anulada fica no histórico; questões já respondidas não pontuam
+  de novo.
 
 ## Decisões de segurança
 

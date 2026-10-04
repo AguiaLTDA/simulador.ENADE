@@ -26,6 +26,8 @@ export type SimuladoAluno = {
   termina_em: string | null;
   situacao: SituacaoSimulado;
   gabarito_liberado: boolean;
+  tentativa: number;
+  nova_tentativa: boolean; // a coordenação anulou a anterior e liberou recomeçar
 };
 
 // Questão como o aluno recebe (sem gabarito).
@@ -45,6 +47,7 @@ export type QuestaoProva = {
 export type ProvaEmAndamento = {
   sessao_id: string;
   titulo: string;
+  tentativa: number;
   iniciada_em: string;
   termina_em: string;
   questoes: QuestaoProva[];
@@ -85,6 +88,7 @@ export type QuestaoResultado = QuestaoProva & {
 // resultado_simulado()
 export type ResultadoAluno = {
   sessao: { id: string; titulo: string; curso: Curso | null; inicio: string; fim: string; duracao_minutos: number };
+  tentativa: number;
   iniciada_em: string;
   finalizada_em: string;
   gabarito_liberado: boolean;

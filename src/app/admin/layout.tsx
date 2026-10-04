@@ -10,10 +10,12 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const itens: [string, string, boolean][] = [
     ["/admin", "Visão geral", true],
     ["/admin/questoes", "Questões", gestor],
+    ["/admin/alunos", "Alunos", gestor],
     ["/admin/simulados", "Simulados", true],
     ["/admin/correcoes", "Correções", true],
     ["/admin/diagnostico", "Diagnóstico inicial", true],
     ["/admin/equipe", "Equipe", staff.papel === "ADMIN"],
+    ["/admin/configuracoes", "Configurações", staff.papel === "ADMIN"],
   ];
 
   return (

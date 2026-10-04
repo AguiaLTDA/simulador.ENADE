@@ -125,7 +125,9 @@ export default async function ResultadoPage({ params }: PageProps<"/simulados/[i
             ← Simulados
           </Link>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight">{r.sessao.titulo}</h1>
-          <p className="text-muted-foreground">Finalizado em {formatarDataHora(r.finalizada_em)}</p>
+          <p className="text-muted-foreground">
+            {r.tentativa > 1 && `${r.tentativa}ª tentativa · `}Finalizado em {formatarDataHora(r.finalizada_em)}
+          </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">

@@ -55,6 +55,11 @@ function Lista({ itens }: { itens: SimuladoAluno[] }) {
                 {s.total_questoes} questões · {formatarDuracao(s.duracao_minutos)} de prova · aberto de{" "}
                 {formatarDataHora(s.inicio)} até {formatarDataHora(s.fim)}
               </CardDescription>
+              {s.nova_tentativa && s.situacao === "DISPONIVEL" && (
+                <p className="text-xs font-medium text-primary">
+                  A coordenação liberou uma nova tentativa para você.
+                </p>
+              )}
               {s.situacao === "CONCLUIDO" && !s.gabarito_liberado && (
                 <p className="text-xs text-muted-foreground">
                   Gabarito e correção liberados em {formatarDataHora(s.fim)}, quando o simulado fecha para todos.

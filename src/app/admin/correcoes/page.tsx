@@ -15,6 +15,9 @@ type Linha = {
   resposta_texto: string;
   criado_em: string;
   tentativa_n: number;
+  sessao_id: string | null;
+  estudante_id: string;
+  tentativa_sessao: number;
   estudantes: { nome: string; curso: Curso; turma: string } | null;
   questoes: {
     enunciado: string;
@@ -40,7 +43,7 @@ export default async function CorrecoesPage({ searchParams }: PageProps<"/admin/
   let consulta = supabase
     .from("respostas")
     .select(
-      `id, resposta_texto, criado_em, tentativa_n,
+      `id, resposta_texto, criado_em, tentativa_n, sessao_id, estudante_id, tentativa_sessao,
        estudantes!inner(nome, curso, turma),
        questoes(enunciado, texto_apoio, eixo, componente, peso_pontos, questoes_gabarito(justificativa)),
        sessoes(titulo),
@@ -52,7 +55,24 @@ export default async function CorrecoesPage({ searchParams }: PageProps<"/admin/
   if (curso) consulta = consulta.eq("estudantes.curso", curso);
   const { data, error } = await consulta;
 
-  const todas = (data ?? []) as unknown as Linha[];
+  // Tentativas de simulado anuladas pela coordenação não precisam de correção.
+  const linhas = (data ?? []) as unknown as Linha[];
+  const sessoesIds = [...new Set(linhas.map((r) => r.sessao_id).filter((x): x is string => !!x))];
+  const [{ data: parts }, { data: libs }] = sessoesIds.length
+    ? await Promise.all([
+        supabase.from("sessoes_participacao").select("sessao_id, estudante_id, tentativa").in("sessao_id", sessoesIds),
+        supabase.from("sessoes_liberacoes").select("sessao_id, estudante_id, tentativa").in("sessao_id", sessoesIds),
+      ])
+    : [{ data: [] }, { data: [] }];
+  const vigente = new Map<string, number>();
+  for (const l of libs ?? []) {
+    const k = `${l.sessao_id}|${l.estudante_id}`;
+    vigente.set(k, Math.max(vigente.get(k) ?? 1, l.tentativa + 1));
+  }
+  for (const p of parts ?? []) vigente.set(`${p.sessao_id}|${p.estudante_id}`, p.tentativa);
+  const todas = linhas.filter(
+    (r) => !r.sessao_id || r.tentativa_sessao >= (vigente.get(`${r.sessao_id}|${r.estudante_id}`) ?? 1),
+  );
   const pendentes = todas.filter((r) => !r.correcoes_discursivas);
   const lista = aba === "pendentes" ? pendentes : todas.filter((r) => r.correcoes_discursivas).slice(0, 100);
   const link = (a: string) => `/admin/correcoes?aba=${a}${curso ? `&curso=${curso}` : ""}`;

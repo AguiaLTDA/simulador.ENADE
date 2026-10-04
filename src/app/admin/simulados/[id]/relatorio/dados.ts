@@ -37,11 +37,13 @@ export type Relatorio = {
     curso: Curso;
     turma: string;
     tipo: "CONCLUINTE" | "INGRESSANTE";
+    tentativa: number;
     iniciada_em: string;
     finalizada_em: string | null;
     encerrado: boolean;
     desempenho: Desempenho;
   }[];
+  aguardando_nova_tentativa: { estudante_id: string; nome: string; turma: string; fim: string }[];
 };
 
 // relatorio_simulado já restringe aos alunos dos cursos do perfil.

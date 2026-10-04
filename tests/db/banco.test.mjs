@@ -90,6 +90,7 @@ test('seed da config com as chaves de pontuação e valores iniciais', async () 
   const cfg = Object.fromEntries(rows.map((r) => [r.chave, Number(r.valor)]));
   assert.deepEqual(cfg, {
     bonus_tempo_max: 1, bonus_tempo_min: 0.7, limite_bonus_tempo_seg: 120, multiplicador_fg: 1.3,
+    enade_peso_fg: 0.25, enade_fg_peso_objetivas: 0.6, enade_ce_peso_objetivas: 0.85,
     pontos_dificil: 35, pontos_facil: 10, pontos_media: 20, sequencia_incremento: 0.05, sequencia_teto: 1.5,
   });
 });

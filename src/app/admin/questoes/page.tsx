@@ -74,10 +74,21 @@ export default async function QuestoesPage({ searchParams }: PageProps<"/admin/q
           <h1 className="text-2xl font-semibold tracking-tight">Banco de questões</h1>
           <p className="text-muted-foreground">{questoes.length} questão(ões) neste filtro.</p>
         </div>
-        <Link href="/admin/questoes/nova" className={buttonVariants()}>
-          Nova questão
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/admin/questoes/importar" className={buttonVariants({ variant: "outline" })}>
+            Importar planilha
+          </Link>
+          <Link href="/admin/questoes/nova" className={buttonVariants()}>
+            Nova questão
+          </Link>
+        </div>
       </div>
+
+      {filtro("importadas") && (
+        <Alert>
+          <AlertDescription>{filtro("importadas")} questão(ões) importada(s).</AlertDescription>
+        </Alert>
+      )}
 
       {salva && AVISO[salva] && (
         <Alert>
