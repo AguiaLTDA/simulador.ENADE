@@ -5,6 +5,7 @@ import { Cabecalho } from "@/components/cabecalho";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { NOME_CURSO, destinoInicial, obterContexto } from "@/lib/contexto";
+import type { SimuladoAluno } from "@/lib/simulados";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function InicioPage() {
@@ -14,8 +15,14 @@ export default async function InicioPage() {
   const primeiroNome = nome.split(" ")[0];
 
   const supabase = await createClient();
-  const { data } = await supabase.rpc("meu_resumo");
+  const [{ data }, { data: simulados }] = await Promise.all([
+    supabase.rpc("meu_resumo"),
+    supabase.rpc("meus_simulados"),
+  ]);
   const resumo = data as { pontos: number; diagnostico: { concluido: boolean; respondidas: number; total: number } };
+  const simuladosAbertos = ((simulados ?? []) as SimuladoAluno[]).filter((s) =>
+    ["DISPONIVEL", "EM_ANDAMENTO"].includes(s.situacao),
+  ).length;
 
   return (
     <>
@@ -54,18 +61,26 @@ export default async function InicioPage() {
               </CardHeader>
             </Card>
           </Link>
-          {[
-            ["Treino Livre", "Questões por componente, eixo e dificuldade, com devolutiva na hora."],
-            ["Simulados", "Provas cronometradas no formato ENADE, com relatório ao final."],
-          ].map(([titulo, desc]) => (
-            <Card key={titulo} className="opacity-70">
+          <Link href="/simulados" className="rounded-xl transition-shadow hover:shadow-md">
+            <Card className="h-full">
               <CardHeader>
-                <CardTitle>{titulo}</CardTitle>
-                <CardDescription>{desc}</CardDescription>
-                <p className="pt-2 text-xs font-medium text-muted-foreground">Em breve</p>
+                <CardTitle>Simulados</CardTitle>
+                <CardDescription>Provas cronometradas no formato ENADE, com relatório ao final.</CardDescription>
+                {simuladosAbertos > 0 && (
+                  <p className="pt-2 text-xs font-medium text-primary">
+                    {simuladosAbertos} disponível(is) agora
+                  </p>
+                )}
               </CardHeader>
             </Card>
-          ))}
+          </Link>
+          <Card className="opacity-70">
+            <CardHeader>
+              <CardTitle>Treino Livre</CardTitle>
+              <CardDescription>Questões por componente, eixo e dificuldade, com devolutiva na hora.</CardDescription>
+              <p className="pt-2 text-xs font-medium text-muted-foreground">Em breve</p>
+            </CardHeader>
+          </Card>
         </div>
       </main>
     </>

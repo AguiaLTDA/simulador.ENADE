@@ -11,7 +11,8 @@ Stack: Next.js (Vercel) + Supabase (Postgres, Auth) + Resend (SMTP do Supabase A
 - [ ] Sprint 4 — Treino Livre
 - [~] Sprint 5 — perfil do aluno, badges e diagnóstico inicial prontos (falta ranking)
 - [x] Extra — coordenadores por curso (VET, ARQ, Engenharias+ADS) e convites da equipe
-- [ ] Sprint 6 — simulado cronometrado + relatórios
+- [x] Sprint 6 — simulado cronometrado + relatórios (por aluno, por eixo e por questão; exportação CSV)
+- [x] Extra — correção de discursivas pela equipe docente
 
 ## Rodar o app localmente
 
@@ -66,6 +67,16 @@ npm install
 npm run test:db
 ```
 
+## Simulados
+
+- Coordenação monta o simulado em `/admin/simulados` (sorteio no padrão ENADE:
+  FG 2 discursivas + 8 objetivas; CE 3 discursivas + 27 objetivas; 4 horas).
+- Aluno faz em `/simulados`: cronômetro do servidor, resposta definitiva por questão,
+  finalização automática quando o tempo acaba.
+- Nota estimada (0–100) com os pesos do ENADE: FG 25% (objetivas 60%, discursivas 40%)
+  e CE 75% (objetivas 85%, discursivas 15%). Em branco conta como erro.
+- Docentes corrigem as discursivas em `/admin/correcoes`.
+
 ## Decisões de segurança
 
 - Gabarito e justificativa ficam em `questoes_gabarito`, sem leitura para alunos.
@@ -73,6 +84,11 @@ npm run test:db
 - `respostas` é append-only (trigger bloqueia UPDATE/DELETE/TRUNCATE); só a
   exclusão LGPD (`excluir_estudante_lgpd`) remove linhas.
 - Pontos e tempo de resposta são calculados no servidor.
-- Respostas de simulado em andamento ficam invisíveis ao próprio aluno.
+- Respostas de simulado em andamento ficam invisíveis ao próprio aluno. Ao finalizar,
+  ele vê a nota; gabarito e acerto questão a questão só saem quando o simulado fecha
+  para todos (`sessoes.fim`), para ninguém repassar respostas a quem ainda vai fazer.
+- Simulado aberto a todos os cursos aceita só Formação Geral; os demais só aceitam
+  questões que valem para o curso. Depois que um aluno inicia, questões, curso,
+  duração e abertura ficam travados.
 - Para dar acesso administrativo, insira o usuário em `public.staff`
   (papel `ADMIN` ou `DOCENTE`) pelo SQL Editor do Supabase.

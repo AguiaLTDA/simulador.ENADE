@@ -478,6 +478,14 @@ test('simulado: questões reservadas saem do treino e não há devolutiva durant
   await como(db, u.mec, async () => {
     await db.query(`select public.finalizar_simulado($1)`, [sid]);
     await erro(db.query(`select public.responder_questao($1, 'A', null, $2)`, [q.fg2, sid]), /finalizado/);
+    // Finalizou, mas a janela segue aberta para os colegas: gabarito ainda retido.
+    assert.equal((await db.query(`select * from public.respostas where sessao_id = $1`, [sid])).rows.length, 0);
+    await erro(db.query(`select public.devolutiva_questao($1)`, [q.mec2]), /indisponível/);
+  });
+
+  // Janela fecha para todos: gabarito liberado.
+  await db.query(`update public.sessoes set fim = now() - interval '1 second' where id = $1`, [sid]);
+  await como(db, u.mec, async () => {
     const vis = await db.query(`select correta from public.respostas where sessao_id = $1`, [sid]);
     assert.equal(vis.rows.length, 1);
     assert.equal(vis.rows[0].correta, true);
@@ -490,13 +498,13 @@ test('simulado: resposta após o tempo esgotado é recusada', async () => {
   const { rows } = await db.query(`
     insert into public.sessoes (tipo, titulo, inicio, fim, duracao_minutos, questoes, publicada)
     values ('SIMULADO', 'Simulado curto', now() - interval '2 hours', now() + interval '1 day', 30,
-            array[$1]::uuid[], true) returning id`, [q.ads]);
+            array[$1]::uuid[], true) returning id`, [q.fg]);
   const sid = rows[0].id;
   await como(db, u.prod, () => db.query(`select public.iniciar_simulado($1)`, [sid]));
   await db.query(`update public.sessoes_participacao set iniciada_em = now() - interval '31 minutes'
                    where sessao_id = $1 and estudante_id = $2`, [sid, u.prod]);
   await como(db, u.prod, () =>
-    erro(db.query(`select public.responder_questao($1, 'C', null, $2)`, [q.ads, sid]), /esgotado/));
+    erro(db.query(`select public.responder_questao($1, 'B', null, $2)`, [q.fg, sid]), /esgotado/));
 });
 
 // ---------------------------------------------------------------------------
