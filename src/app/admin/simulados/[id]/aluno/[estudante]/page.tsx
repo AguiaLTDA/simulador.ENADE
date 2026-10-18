@@ -73,7 +73,7 @@ export default async function RevisaoAlunoPage({ params }: PageProps<"/admin/sim
         </Link>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">{r.aluno.nome}</h1>
         <p className="text-muted-foreground">
-          {r.sessao.titulo} · {SIGLA_CURSO[r.aluno.curso]} · {r.aluno.turma} ·{" "}
+          {r.sessao.titulo} · {SIGLA_CURSO[r.aluno.curso]} · {r.aluno.turma ?? "sem turma"} ·{" "}
           <Link href={`/admin/alunos/${r.aluno.id}`} className="underline">
             perfil do aluno
           </Link>

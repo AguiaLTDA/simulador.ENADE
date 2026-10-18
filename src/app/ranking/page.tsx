@@ -54,7 +54,13 @@ export default async function RankingPage({ searchParams }: PageProps<"/ranking"
   const ctx = await obterContexto();
   if (!ctx.estudante || ctx.estudante.status !== "ATIVO") redirect(destinoInicial(ctx));
   const sp = await searchParams;
-  const escopo = lerEscopo(sp.escopo);
+  // Sem turma informada no cadastro, o recorte "Minha turma" não se aplica.
+  const temTurma = Boolean(ctx.estudante.turma);
+  const escopoPedido = lerEscopo(sp.escopo);
+  const escopo: Escopo = escopoPedido === "TURMA" && !temTurma ? "CURSO" : escopoPedido;
+  const escopos = Object.fromEntries(
+    Object.entries(NOME_ESCOPO).filter(([e]) => temTurma || e !== "TURMA"),
+  ) as Record<Escopo, string>;
   const periodo = lerPeriodo(sp.periodo);
 
   const supabase = await createClient();
@@ -67,7 +73,7 @@ export default async function RankingPage({ searchParams }: PageProps<"/ranking"
 
   return (
     <>
-      <Cabecalho nome={ctx.estudante.nome} detalhe={`${NOME_CURSO[ctx.estudante.curso]} · ${ctx.estudante.turma}`} />
+      <Cabecalho nome={ctx.estudante.nome} detalhe={NOME_CURSO[ctx.estudante.curso]} />
       <main className="mx-auto w-full max-w-3xl space-y-6 px-4 py-8">
         <div>
           <Link href="/inicio" className="text-sm text-muted-foreground hover:text-foreground">
@@ -81,7 +87,7 @@ export default async function RankingPage({ searchParams }: PageProps<"/ranking"
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Filtro opcoes={NOME_ESCOPO} atual={escopo} href={(e) => link(e, periodo)} />
+          <Filtro opcoes={escopos} atual={escopo} href={(e) => link(e, periodo)} />
           <Filtro opcoes={NOME_PERIODO} atual={periodo} href={(p) => link(escopo, p)} />
         </div>
 
@@ -147,7 +153,7 @@ export default async function RankingPage({ searchParams }: PageProps<"/ranking"
                       {l.eu && <span className="ml-1.5 text-xs text-primary">(você)</span>}
                     </TableCell>
                     {escopo === "GERAL" && <TableCell>{SIGLA_CURSO[l.curso]}</TableCell>}
-                    {escopo !== "TURMA" && <TableCell>{l.turma}</TableCell>}
+                    {escopo !== "TURMA" && <TableCell>{l.turma ?? "—"}</TableCell>}
                     <TableCell className="text-right tabular-nums">{l.pontos}</TableCell>
                   </TableRow>
                 ))}
@@ -156,7 +162,7 @@ export default async function RankingPage({ searchParams }: PageProps<"/ranking"
                     <TableCell className="text-center tabular-nums">{r.eu.posicao}º</TableCell>
                     <TableCell>Você</TableCell>
                     {escopo === "GERAL" && <TableCell>{SIGLA_CURSO[ctx.estudante.curso]}</TableCell>}
-                    {escopo !== "TURMA" && <TableCell>{ctx.estudante.turma}</TableCell>}
+                    {escopo !== "TURMA" && <TableCell>{ctx.estudante.turma ?? "—"}</TableCell>}
                     <TableCell className="text-right tabular-nums">{r.eu.pontos}</TableCell>
                   </TableRow>
                 )}

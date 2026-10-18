@@ -102,7 +102,7 @@ test('anon não lê nenhuma tabela nem chama RPCs', async () => {
       await erro(db.query(`select * from public.${t}`), /permission denied/);
     }
     await erro(db.query(`select public.exibir_questao($1)`, [q.fg]), /permission denied/);
-    await erro(db.query(`select public.concluir_cadastro('Ana Mecânica', '12345678909', '2000-03-15', '27999991234', 'ENG_MEC', 'MEC', 'CONCLUINTE', null, true)`), /permission denied/);
+    await erro(db.query(`select public.concluir_cadastro('Ana Mecânica', '12345678909', '27999991234', 'ENG_MEC', true)`), /permission denied/);
   });
 });
 
@@ -114,30 +114,24 @@ test('funções internas não são executáveis pelo aluno', async () => {
 });
 
 // ---------------------------------------------------------------------------
-const ALUNO_PADRAO = {
-  nome: 'Aluno Teste', cpf: '52998224725', nasc: '2000-01-01', tel: '27999990000',
-  curso: 'ADS', turma: 'ADS-2023', tipo: 'CONCLUINTE', matricula: null, lgpd: true,
-};
+const ALUNO_PADRAO = { nome: 'Aluno Teste', cpf: '52998224725', tel: '27999990000', curso: 'ADS', lgpd: true };
 
 async function cadastrar(uid, dados = {}) {
   const d = { ...ALUNO_PADRAO, ...dados };
   const { rows } = await como(db, uid, () => db.query(
-    `select public.concluir_cadastro($1, $2, $3::date, $4, $5::public.curso, $6, $7::public.tipo_estudante, $8, $9) as r`,
-    [d.nome, d.cpf, d.nasc, d.tel, d.curso, d.turma, d.tipo, d.matricula, d.lgpd]));
+    `select public.concluir_cadastro($1, $2, $3, $4::public.curso, $5) as r`,
+    [d.nome, d.cpf, d.tel, d.curso, d.lgpd]));
   return rows[0].r;
 }
 
-test('cadastro livre: validações de formato e LGPD', async () => {
+test('cadastro simples: validações de formato e LGPD', async () => {
   const cod = async (dados) => (await cadastrar(u.mec, dados)).codigo;
   assert.equal(await cod({ lgpd: false }), 'LGPD_OBRIGATORIO');
   assert.equal(await cod({ nome: 'Ana' }), 'NOME_INVALIDO');
   assert.equal(await cod({ cpf: '12345678900' }), 'CPF_INVALIDO');
   assert.equal(await cod({ cpf: '11111111111' }), 'CPF_INVALIDO');
   assert.equal(await cod({ tel: '9999' }), 'TELEFONE_INVALIDO');
-  assert.equal(await cod({ nasc: '2030-01-01' }), 'DATA_INVALIDA');
-  assert.equal(await cod({ turma: '   ' }), 'TURMA_INVALIDA');
   assert.equal(await cod({ curso: null }), 'CURSO_INVALIDO');
-  assert.equal(await cod({ tipo: null }), 'TIPO_INVALIDO');
 });
 
 test('usuário sem cadastro não acessa questões', async () => {
@@ -146,32 +140,28 @@ test('usuário sem cadastro não acessa questões', async () => {
   });
 });
 
-test('cadastro livre: aluno informa os próprios dados, sem pré-cadastro', async () => {
+test('cadastro simples: nome, e-mail da conta, telefone, CPF e curso', async () => {
   const r = await cadastrar(u.mec, {
-    nome: '  Ana   Mecânica ', cpf: '123.456.789-09', nasc: '2000-03-15', tel: '(27) 99999-1234',
-    curso: 'ENG_MEC', turma: ' mec-2021 ', tipo: 'CONCLUINTE', matricula: '2021001',
+    nome: '  Ana   Mecânica ', cpf: '123.456.789-09', tel: '(27) 99999-1234', curso: 'ENG_MEC',
   });
   assert.equal(r.ok, true, JSON.stringify(r));
   const e = (await db.query(`select * from public.estudantes where id = $1`, [u.mec])).rows[0];
   assert.equal(e.nome, 'Ana Mecânica');
   assert.equal(e.email_pessoal, 'aluno.mec@gmail.com');
   assert.equal(e.cpf, '12345678909');
-  assert.equal(e.matricula, '2021001');
   assert.equal(e.curso, 'ENG_MEC');
-  assert.equal(e.turma, 'MEC-2021');
+  assert.equal(e.turma, null);
+  assert.equal(e.data_nascimento, null);
   assert.equal(e.telefone, '27999991234');
   assert.equal(e.status, 'ATIVO');
   assert.ok(e.consentimento_lgpd && e.consentimento_data);
 
-  // Matrícula é opcional
   assert.equal((await cadastrar(u.ads, { nome: 'Bia ADS Silva', cpf: '98765432100', curso: 'ADS' })).ok, true);
-  assert.equal((await cadastrar(u.prod, { nome: 'Caio Produção', cpf: '11144477735', curso: 'ENG_PROD',
-                                          turma: 'PROD-2024', tipo: 'INGRESSANTE' })).ok, true);
+  assert.equal((await cadastrar(u.prod, { nome: 'Caio Produção', cpf: '11144477735', curso: 'ENG_PROD' })).ok, true);
 });
 
-test('cadastro livre: um cadastro por CPF e por matrícula', async () => {
+test('cadastro simples: um cadastro por CPF', async () => {
   assert.equal((await cadastrar(u.intruso, { cpf: '12345678909' })).codigo, 'JA_VINCULADO');
-  assert.equal((await cadastrar(u.intruso, { cpf: '22233366638', matricula: '2021001' })).codigo, 'MATRICULA_EM_USO');
   assert.equal((await cadastrar(u.mec, { cpf: '12345678909' })).codigo, 'CADASTRO_EXISTENTE');
 });
 

@@ -19,7 +19,7 @@ const Q = {
 const salvar = async (uid, dados) =>
   (await como(db, uid, () => db.query(`select public.salvar_questao($1::jsonb) as id`, [JSON.stringify({ ...Q, ...dados })]))).rows[0].id;
 const cadastrar = (uid, nome, cpf, curso) => como(db, uid, () => db.query(
-  `select public.concluir_cadastro($1, $2, '2000-01-01', '27999990000', $3::public.curso, 'T1', 'CONCLUINTE', null, true)`,
+  `select public.concluir_cadastro($1, $2, '27999990000', $3::public.curso, true)`,
   [nome, cpf, curso]));
 
 before(async () => {

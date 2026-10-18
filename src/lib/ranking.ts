@@ -20,7 +20,7 @@ export type RankingAluno = {
   periodo: Periodo;
   participantes: number;
   eu: { posicao: number | null; pontos: number; respondidas: number; acertos: number; objetivas: number };
-  lideres: { posicao: number; nome: string; curso: Curso; turma: string; pontos: number; eu: boolean }[];
+  lideres: { posicao: number; nome: string; curso: Curso; turma: string | null; pontos: number; eu: boolean }[];
 };
 
 // ranking_equipe()
@@ -30,8 +30,8 @@ export type AlunoRanking = {
   nome: string;
   email: string;
   curso: Curso;
-  turma: string;
-  tipo: "CONCLUINTE" | "INGRESSANTE";
+  turma: string | null;
+  tipo: "CONCLUINTE" | "INGRESSANTE" | null;
   pontos: number;
   respondidas: number;
   objetivas: number;

@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 export default async function InicioPage() {
   const ctx = await obterContexto();
   if (!ctx.estudante || ctx.estudante.status !== "ATIVO") redirect(destinoInicial(ctx));
-  const { nome, curso, turma } = ctx.estudante;
+  const { nome, curso } = ctx.estudante;
   const primeiroNome = nome.split(" ")[0];
 
   const supabase = await createClient();
@@ -26,7 +26,7 @@ export default async function InicioPage() {
 
   return (
     <>
-      <Cabecalho nome={nome} detalhe={`${NOME_CURSO[curso]} · ${turma}`} />
+      <Cabecalho nome={nome} detalhe={NOME_CURSO[curso]} />
       <main className="mx-auto w-full max-w-5xl space-y-6 px-4 py-8">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Olá, {primeiroNome}!</h1>

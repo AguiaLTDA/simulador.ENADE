@@ -18,8 +18,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <CardHeader>
           <CardTitle>Entrar</CardTitle>
           <CardDescription>
-            Use seu e-mail e senha. No primeiro acesso, clique em “Primeiro acesso ou esqueci minha
-            senha” para criar a sua.
+            Use seu e-mail e senha. Estudante sem conta? Clique em “Cadastre-se”.
           </CardDescription>
         </CardHeader>
         <CardContent>

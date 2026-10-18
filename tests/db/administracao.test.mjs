@@ -21,9 +21,12 @@ const Q = {
 const salvarQuestao = async (dados) =>
   (await como(db, u.admin, () => db.query(`select public.salvar_questao($1::jsonb) as id`,
     [JSON.stringify({ ...Q, ...dados })]))).rows[0].id;
-const cadastrar = (uid, nome, cpf, curso) => como(db, uid, () => db.query(
-  `select public.concluir_cadastro($1, $2, '2000-01-01', '27999990000', $3::public.curso, 'T1', 'CONCLUINTE', null, true)`,
-  [nome, cpf, curso]));
+// Cadastro simples (nome, CPF, telefone, curso); turma e situação são preenchidas depois, como a coordenação faria.
+const cadastrar = async (uid, nome, cpf, curso) => {
+  await como(db, uid, () => db.query(
+    `select public.concluir_cadastro($1, $2, '27999990000', $3::public.curso, true)`, [nome, cpf, curso]));
+  await db.query(`update public.estudantes set turma = 'T1', tipo = 'CONCLUINTE', data_nascimento = '2000-01-01' where id = $1`, [uid]);
+};
 const um = async (uid, sql, params = []) => (await como(db, uid, () => db.query(sql, params))).rows[0];
 const perfil = (dados = {}) => JSON.stringify({
   nome: 'Aluna Veterinária', cpf: '98765432100', data_nascimento: '2000-01-01', telefone: '27999990000',
@@ -110,6 +113,14 @@ test('perfil: coordenador edita aluno do seu curso; não alcança outros cursos'
   });
 
   // Admin desbloqueia e pode transferir de curso.
+  await como(db, u.admin, () => db.query(`select public.atualizar_estudante($1, $2::jsonb)`, [u.vet, perfil()]));
+});
+
+test('perfil: turma, situação e data de nascimento são opcionais (cadastro simples)', async () => {
+  await como(db, u.admin, () => db.query(`select public.atualizar_estudante($1, $2::jsonb)`,
+    [u.vet, perfil({ turma: '', tipo: '', data_nascimento: '' })]));
+  const e = (await db.query(`select turma, tipo, data_nascimento from public.estudantes where id = $1`, [u.vet])).rows[0];
+  assert.deepEqual(e, { turma: null, tipo: null, data_nascimento: null });
   await como(db, u.admin, () => db.query(`select public.atualizar_estudante($1, $2::jsonb)`, [u.vet, perfil()]));
 });
 

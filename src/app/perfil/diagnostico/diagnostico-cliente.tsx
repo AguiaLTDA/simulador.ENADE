@@ -73,7 +73,7 @@ export function DiagnosticoCliente({ respondidasAntes, total }: { respondidasAnt
                 {" "}e ganhou <strong className="text-foreground">+{pontos} pontos</strong> no ranking
               </>
             )}
-            . Suas respostas ajudam a coordenação a planejar a preparação da sua turma.
+            . Suas respostas ajudam a coordenação a planejar a preparação do seu curso.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center gap-3">

@@ -14,9 +14,12 @@ async function erro(promessa, padrao) {
   });
 }
 
-const cadastrar = (uid, nome, cpf, curso, turma) => como(db, uid, () => db.query(
-  `select public.concluir_cadastro($1, $2, '2000-01-01', '27999990000', $3::public.curso, $4, 'CONCLUINTE', null, true)`,
-  [nome, cpf, curso, turma]));
+// Cadastro simples (nome, CPF, telefone, curso); turma e situação são preenchidas depois, como a coordenação faria.
+const cadastrar = async (uid, nome, cpf, curso, turma) => {
+  await como(db, uid, () => db.query(
+    `select public.concluir_cadastro($1, $2, '27999990000', $3::public.curso, true)`, [nome, cpf, curso]));
+  await db.query(`update public.estudantes set turma = $2, tipo = 'CONCLUINTE', data_nascimento = '2000-01-01' where id = $1`, [uid, turma]);
+};
 const extra = (uid, origem, pontos, quando = 'now()') =>
   db.query(`insert into public.pontos_extras (estudante_id, origem, pontos, criado_em) values ($1, $2, $3, ${quando})`,
     [uid, origem, pontos]);

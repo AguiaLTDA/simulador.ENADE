@@ -19,9 +19,9 @@ export default function TermoLgpdPage() {
         <h3 className="font-semibold">1. Dados tratados</h3>
         <ul className="list-disc space-y-1 pl-5">
           <li>E-mail pessoal, usado para login.</li>
-          <li>Nome, CPF e data de nascimento, para identificar você e evitar cadastros duplicados.</li>
+          <li>Nome completo e CPF, para identificar você e evitar cadastros duplicados.</li>
           <li>Telefone, para contato da coordenação sobre simulados e o ENADE.</li>
-          <li>Curso, turma, matrícula (opcional) e situação no ENADE (concluinte/ingressante).</li>
+          <li>Curso de graduação.</li>
           <li>Respostas, tempos de resposta, pontuação, conquistas e datas de acesso.</li>
         </ul>
 
@@ -32,7 +32,7 @@ export default function TermoLgpdPage() {
             Produzir relatórios para a coordenação e o NDE planejarem ações de preparação para o ENADE.
           </li>
           <li>
-            Ranking: se você estiver entre os 10 primeiros de um recorte (geral, curso, turma ou
+            Ranking: se você estiver entre os 10 primeiros de um recorte (geral, curso ou
             Formação Geral), seu <strong>nome</strong> e sua pontuação aparecem para os outros
             estudantes. Fora do top 10, só você vê a sua posição.
           </li>

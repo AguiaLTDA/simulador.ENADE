@@ -10,8 +10,8 @@ export type Contexto = {
   estudante: {
     nome: string;
     curso: Curso;
-    turma: string;
-    tipo: "CONCLUINTE" | "INGRESSANTE";
+    turma: string | null;
+    tipo: "CONCLUINTE" | "INGRESSANTE" | null;
     status: "ATIVO" | "PENDENTE" | "BLOQUEADO";
   } | null;
 };

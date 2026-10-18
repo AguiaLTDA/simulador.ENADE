@@ -15,8 +15,8 @@ export async function GET(req: NextRequest) {
     ["Posição", "Aluno", "E-mail", "Curso", "Turma", "Situação", "Pontos", "Questões respondidas",
      "Objetivas (1ª tentativa)", "Acertos", "Acerto (%)", "Simulados concluídos", "Última atividade"],
     ...alunos.map((a) => [
-      a.posicao ? String(a.posicao) : "", a.nome, a.email, NOME_CURSO[a.curso], a.turma,
-      a.tipo === "CONCLUINTE" ? "Concluinte" : "Ingressante", String(a.pontos), String(a.respondidas),
+      a.posicao ? String(a.posicao) : "", a.nome, a.email, NOME_CURSO[a.curso], a.turma ?? "",
+      a.tipo ? (a.tipo === "CONCLUINTE" ? "Concluinte" : "Ingressante") : "", String(a.pontos), String(a.respondidas),
       String(a.objetivas), String(a.acertos), String(percentual(a.acertos, a.objetivas) ?? ""),
       String(a.simulados), a.ultima_atividade ?? "",
     ]),

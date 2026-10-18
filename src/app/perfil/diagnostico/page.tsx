@@ -18,7 +18,7 @@ export default async function DiagnosticoPage() {
 
   return (
     <>
-      <Cabecalho nome={ctx.estudante.nome} detalhe={`${NOME_CURSO[ctx.estudante.curso]} · ${ctx.estudante.turma}`} />
+      <Cabecalho nome={ctx.estudante.nome} detalhe={NOME_CURSO[ctx.estudante.curso]} />
       <main className="mx-auto w-full max-w-2xl space-y-6 px-4 py-8">
         <div>
           <Link href="/perfil" className="text-sm text-muted-foreground hover:text-foreground">

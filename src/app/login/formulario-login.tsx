@@ -17,7 +17,7 @@ export function FormularioLogin({ aviso }: { aviso?: "link" | "senha-criada" }) 
     <form action={acao} className="space-y-4">
       {aviso === "link" && !estado.erro && (
         <Alert variant="destructive">
-          <AlertDescription>O link expirou ou já foi usado. Peça um novo em “Primeiro acesso ou esqueci minha senha”.</AlertDescription>
+          <AlertDescription>O link expirou ou já foi usado. Peça um novo em “Esqueci minha senha”.</AlertDescription>
         </Alert>
       )}
       {estado.erro && (
@@ -66,10 +66,16 @@ export function FormularioLogin({ aviso }: { aviso?: "link" | "senha-criada" }) 
         {pendente ? "Entrando..." : "Entrar"}
       </Button>
 
-      <div className="text-center">
-        <Link href="/recuperar-senha" className="text-sm font-medium underline underline-offset-4">
-          Primeiro acesso ou esqueci minha senha
+      <div className="space-y-2 text-center text-sm">
+        <Link href="/recuperar-senha" className="block font-medium underline underline-offset-4">
+          Esqueci minha senha
         </Link>
+        <p className="text-muted-foreground">
+          Ainda não tem conta?{" "}
+          <Link href="/cadastro" className="font-medium text-foreground underline underline-offset-4">
+            Cadastre-se
+          </Link>
+        </p>
       </div>
     </form>
   );

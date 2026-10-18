@@ -27,7 +27,7 @@ export async function definirSenha(_prev: EstadoSenha, formData: FormData): Prom
       return { erro: "Senha fraca. Use pelo menos 8 caracteres, com letras e números." };
     }
     if (error.code === "reauthentication_needed") {
-      return { erro: "Por segurança, peça um novo link em “Primeiro acesso ou esqueci minha senha”." };
+      return { erro: "Por segurança, peça um novo link em “Esqueci minha senha”." };
     }
     console.error("updateUser(password)", error.status, error.code, error.message);
     return { erro: "Não foi possível salvar a senha agora. Tente novamente." };

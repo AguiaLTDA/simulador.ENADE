@@ -141,7 +141,7 @@ export default async function RankingEquipePage({ searchParams }: PageProps<"/ad
                     </span>
                   </TableCell>
                   <TableCell>{SIGLA_CURSO[a.curso]}</TableCell>
-                  <TableCell>{a.turma}</TableCell>
+                  <TableCell>{a.turma ?? "—"}</TableCell>
                   <TableCell className="text-right font-medium tabular-nums">{a.pontos}</TableCell>
                   <TableCell className="text-right tabular-nums">{a.respondidas}</TableCell>
                   <TableCell className="text-right tabular-nums">{pct === null ? "—" : `${pct}%`}</TableCell>

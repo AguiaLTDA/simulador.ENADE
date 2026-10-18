@@ -19,8 +19,8 @@ type Linha = {
   email_pessoal: string;
   matricula: string | null;
   curso: Curso;
-  turma: string;
-  tipo: "CONCLUINTE" | "INGRESSANTE";
+  turma: string | null;
+  tipo: "CONCLUINTE" | "INGRESSANTE" | null;
   status: "ATIVO" | "PENDENTE" | "BLOQUEADO";
   ultimo_acesso: string | null;
 };
@@ -121,8 +121,8 @@ export default async function AlunosPage({ searchParams }: PageProps<"/admin/alu
                   </span>
                 </TableCell>
                 <TableCell>{SIGLA_CURSO[a.curso]}</TableCell>
-                <TableCell>{a.turma}</TableCell>
-                <TableCell>{a.tipo === "CONCLUINTE" ? "Concluinte" : "Ingressante"}</TableCell>
+                <TableCell>{a.turma ?? "—"}</TableCell>
+                <TableCell>{a.tipo ? (a.tipo === "CONCLUINTE" ? "Concluinte" : "Ingressante") : "—"}</TableCell>
                 <TableCell className="text-xs">{a.ultimo_acesso ? formatarDataHora(a.ultimo_acesso) : "—"}</TableCell>
                 <TableCell>
                   <Badge variant={VARIANTE[a.status]}>{a.status.toLowerCase()}</Badge>

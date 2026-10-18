@@ -25,7 +25,7 @@ type Linha = {
   acertos: number | null;
   total: number | null;
   resultado: Record<Area, ResultadoArea> | null;
-  estudantes: { nome: string; curso: Curso; turma: string; tipo: string } | null;
+  estudantes: { nome: string; curso: Curso; turma: string | null; tipo: string | null } | null;
 };
 
 export default async function DiagnosticoAdminPage({ searchParams }: PageProps<"/admin/diagnostico">) {
@@ -145,7 +145,7 @@ export default async function DiagnosticoAdminPage({ searchParams }: PageProps<"
               <TableHeader>
                 <TableRow>
                   <TableHead>Aluno</TableHead>
-                  <TableHead>Curso / turma</TableHead>
+                  <TableHead>Curso</TableHead>
                   {AREAS.map((a) => (
                     <TableHead key={a}>{NOME_AREA[a].split(" ")[0]}</TableHead>
                   ))}
@@ -157,7 +157,8 @@ export default async function DiagnosticoAdminPage({ searchParams }: PageProps<"
                   <TableRow key={l.estudante_id}>
                     <TableCell className="font-medium">{l.estudantes?.nome}</TableCell>
                     <TableCell className="text-sm">
-                      {l.estudantes && SIGLA_CURSO[l.estudantes.curso]} · {l.estudantes?.turma}
+                      {l.estudantes && SIGLA_CURSO[l.estudantes.curso]}
+                      {l.estudantes?.turma && ` · ${l.estudantes.turma}`}
                     </TableCell>
                     {AREAS.map((a) => {
                       const r = l.resultado?.[a];

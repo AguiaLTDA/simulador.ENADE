@@ -12,7 +12,7 @@ export type DadosAluno = {
   telefone: string;
   curso: Curso;
   turma: string;
-  tipo: "CONCLUINTE" | "INGRESSANTE";
+  tipo: "CONCLUINTE" | "INGRESSANTE" | "";
   matricula: string;
   status: "ATIVO" | "PENDENTE" | "BLOQUEADO";
 };

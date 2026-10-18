@@ -54,7 +54,7 @@ export function FormularioAluno({ id, inicial, cursos }: { id: string; inicial: 
           {cpfErrado && <p className="text-xs text-destructive">CPF inválido.</p>}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="nasc">Data de nascimento</Label>
+          <Label htmlFor="nasc">Data de nascimento (opcional)</Label>
           <Input id="nasc" type="date" value={f.data_nascimento} onChange={(e) => set("data_nascimento", e.target.value)} />
         </div>
         <div className="space-y-1.5">
@@ -77,12 +77,13 @@ export function FormularioAluno({ id, inicial, cursos }: { id: string; inicial: 
           </NativeSelect>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="turma">Turma</Label>
+          <Label htmlFor="turma">Turma (opcional)</Label>
           <Input id="turma" value={f.turma} onChange={(e) => set("turma", e.target.value)} maxLength={40} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="tipo">Situação no ENADE</Label>
           <NativeSelect id="tipo" value={f.tipo} onChange={(e) => set("tipo", e.target.value as DadosAluno["tipo"])}>
+            <option value="">Não informada</option>
             <option value="CONCLUINTE">Concluinte</option>
             <option value="INGRESSANTE">Ingressante</option>
           </NativeSelect>

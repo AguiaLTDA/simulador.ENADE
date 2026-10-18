@@ -172,7 +172,7 @@ export default async function RelatorioPage({ params }: PageProps<"/admin/simula
                             {SIGLA_CURSO[p.curso]} · {p.tipo === "CONCLUINTE" ? "Concluinte" : "Ingressante"}
                           </span>
                         </TableCell>
-                        <TableCell>{p.turma}</TableCell>
+                        <TableCell>{p.turma ?? "—"}</TableCell>
                         <TableCell>
                           {p.encerrado ? (
                             <Badge variant="outline">Concluído</Badge>
@@ -211,7 +211,7 @@ export default async function RelatorioPage({ params }: PageProps<"/admin/simula
                     <Link href={`/admin/simulados/${id}/aluno/${a.estudante_id}`} className="hover:underline">
                       {a.nome}
                     </Link>{" "}
-                    · {a.turma} · até {formatarDataHora(a.fim)}
+                    · {a.turma ?? "sem turma"} · até {formatarDataHora(a.fim)}
                   </li>
                 ))}
               </ul>

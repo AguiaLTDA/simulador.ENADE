@@ -77,7 +77,7 @@ export default async function AlunoPage({ params }: PageProps<"/admin/alunos/[id
           </Link>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight">{a.nome}</h1>
           <p className="text-muted-foreground">
-            {NOME_CURSO[a.curso as Curso]} · {a.turma} · {a.email_pessoal} · cadastrado em{" "}
+            {NOME_CURSO[a.curso as Curso]}{a.turma && ` · ${a.turma}`} · {a.email_pessoal} · cadastrado em{" "}
             {formatarDataHora(a.criado_em)}
           </p>
         </div>
@@ -98,11 +98,11 @@ export default async function AlunoPage({ params }: PageProps<"/admin/alunos/[id
             inicial={{
               nome: a.nome,
               cpf: mascaraCpf(a.cpf),
-              data_nascimento: a.data_nascimento,
+              data_nascimento: a.data_nascimento ?? "",
               telefone: mascaraTelefone(a.telefone ?? ""),
               curso: a.curso,
-              turma: a.turma,
-              tipo: a.tipo,
+              turma: a.turma ?? "",
+              tipo: a.tipo ?? "",
               matricula: a.matricula ?? "",
               status: a.status,
             }}

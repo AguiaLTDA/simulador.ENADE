@@ -13,7 +13,7 @@ async function erro(promessa, padrao) {
 }
 
 const cadastrar = (uid, nome, cpf, curso) => como(db, uid, () => db.query(
-  `select public.concluir_cadastro($1, $2, '2000-01-01', '27999990000', $3::public.curso, 'T1', 'CONCLUINTE', null, true)`,
+  `select public.concluir_cadastro($1, $2, '27999990000', $3::public.curso, true)`,
   [nome, cpf, curso]));
 
 const rpc = async (uid, sql, params = []) => (await como(db, uid, () => db.query(sql, params))).rows[0];

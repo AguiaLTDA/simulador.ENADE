@@ -25,7 +25,7 @@ export async function entrar(_prev: EstadoLogin, formData: FormData): Promise<Es
     if (error.code === "invalid_credentials" || error.status === 400) {
       return {
         erro:
-          "E-mail ou senha incorretos. Se este é o seu primeiro acesso, use “Primeiro acesso ou esqueci minha senha” para criar a sua senha.",
+          "E-mail ou senha incorretos. Se ainda não tem conta, use “Cadastre-se”; se esqueceu a senha, use “Esqueci minha senha”.",
         email,
       };
     }
@@ -38,7 +38,7 @@ export async function entrar(_prev: EstadoLogin, formData: FormData): Promise<Es
 
 export type EstadoLink = { status: "inicial" | "enviado" | "erro"; mensagem?: string; email?: string };
 
-// "Primeiro acesso ou esqueci minha senha": envia um link por e-mail que abre a
+// "Esqueci minha senha" (e 1º acesso da equipe): envia um link por e-mail que abre a
 // tela de criar/redefinir senha. Serve para contas novas e existentes.
 // O envio é feito pelo próprio Supabase Auth (SMTP do Resend configurado no painel).
 export async function enviarLinkSenha(_prev: EstadoLink, formData: FormData): Promise<EstadoLink> {

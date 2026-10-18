@@ -2,7 +2,7 @@ import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// Destino do link enviado em "Primeiro acesso ou esqueci minha senha".
+// Destino do link enviado no cadastro e em "Esqueci minha senha".
 // Depois de validar o link, o usuário é levado a criar/redefinir a senha.
 // - token_hash: template de e-mail customizado (funciona mesmo abrindo o link em
 //   outro aparelho, ex.: pediu no computador e abriu no celular).

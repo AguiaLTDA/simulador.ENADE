@@ -10,10 +10,10 @@ export default function RecuperarSenhaPage() {
       <Marca />
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Primeiro acesso ou esqueci minha senha</CardTitle>
+          <CardTitle>Esqueci minha senha</CardTitle>
           <CardDescription>
-            Informe o seu e-mail pessoal. Vamos enviar um link para você criar a sua senha (no
-            primeiro acesso) ou definir uma nova.
+            Informe o seu e-mail. Vamos enviar um link para você definir uma nova senha. Equipe da
+            coordenação: use esta opção também no primeiro acesso.
           </CardDescription>
         </CardHeader>
         <CardContent>

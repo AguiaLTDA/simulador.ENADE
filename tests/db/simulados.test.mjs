@@ -21,9 +21,12 @@ const Q = {
 const salvarQuestao = async (dados) =>
   (await como(db, u.admin, () => db.query(`select public.salvar_questao($1::jsonb) as id`,
     [JSON.stringify({ ...Q, ...dados })]))).rows[0].id;
-const cadastrar = (uid, nome, cpf, curso) => como(db, uid, () => db.query(
-  `select public.concluir_cadastro($1, $2, '2000-01-01', '27999990000', $3::public.curso, 'T1', 'CONCLUINTE', null, true)`,
-  [nome, cpf, curso]));
+// Cadastro simples (nome, CPF, telefone, curso); turma e situação são preenchidas depois, como a coordenação faria.
+const cadastrar = async (uid, nome, cpf, curso) => {
+  await como(db, uid, () => db.query(
+    `select public.concluir_cadastro($1, $2, '27999990000', $3::public.curso, true)`, [nome, cpf, curso]));
+  await db.query(`update public.estudantes set turma = 'T1', tipo = 'CONCLUINTE', data_nascimento = '2000-01-01' where id = $1`, [uid]);
+};
 const simulado = (dados) => ({
   titulo: 'Simulado VET', curso: 'VET', duracao_minutos: 60, publicada: true,
   inicio: new Date(Date.now() - 60_000).toISOString(),

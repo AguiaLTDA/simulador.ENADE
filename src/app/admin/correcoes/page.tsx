@@ -140,7 +140,7 @@ export default async function CorrecoesPage({ searchParams }: PageProps<"/admin/
                 <div>
                   <p className="font-medium">{r.estudantes?.nome}</p>
                   <p className="text-xs text-muted-foreground">
-                    {r.estudantes && `${SIGLA_CURSO[r.estudantes.curso]} · ${r.estudantes.turma} · `}
+                    {r.estudantes && `${SIGLA_CURSO[r.estudantes.curso]} · ${r.estudantes.turma ? `${r.estudantes.turma} · ` : ""}`}
                     {r.sessoes ? `Simulado “${r.sessoes.titulo}”` : "Treino Livre"} · {formatarDataHora(r.criado_em)}
                   </p>
                 </div>

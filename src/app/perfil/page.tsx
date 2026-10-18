@@ -33,7 +33,7 @@ export default async function PerfilPage() {
 
   return (
     <>
-      <Cabecalho nome={e.nome} detalhe={`${NOME_CURSO[e.curso]} · ${e.turma}`} />
+      <Cabecalho nome={e.nome} detalhe={NOME_CURSO[e.curso]} />
       <main className="mx-auto w-full max-w-5xl space-y-6 px-4 py-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -42,7 +42,9 @@ export default async function PerfilPage() {
             </Link>
             <h1 className="mt-1 text-2xl font-semibold tracking-tight">{e.nome}</h1>
             <p className="text-muted-foreground">
-              {NOME_CURSO[e.curso]} · Turma {e.turma} · {e.tipo === "CONCLUINTE" ? "Concluinte" : "Ingressante"}
+              {NOME_CURSO[e.curso]}
+              {e.turma && ` · Turma ${e.turma}`}
+              {e.tipo && ` · ${e.tipo === "CONCLUINTE" ? "Concluinte" : "Ingressante"}`}
             </p>
           </div>
         </div>
