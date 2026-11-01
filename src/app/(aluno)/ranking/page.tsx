@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Trophy } from "lucide-react";
-import { Cabecalho } from "@/components/cabecalho";
+import { Pagina } from "@/components/aluno/pagina";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { destinoInicial, obterContexto } from "@/lib/contexto";
-import { NOME_CURSO, SIGLA_CURSO } from "@/lib/cursos";
+import { SIGLA_CURSO } from "@/lib/cursos";
 import {
   NOME_ESCOPO,
   NOME_PERIODO,
@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 
 export const metadata = { title: "Classificação — Portal Simulado ENADE" };
 
-const COR_PODIO = ["text-amber-500", "text-slate-400", "text-orange-700"];
+const COR_PODIO = ["text-dourado", "text-slate-400", "text-[#b06a3b]"];
 
 function Filtro<T extends string>({
   opcoes,
@@ -72,19 +72,11 @@ export default async function RankingPage({ searchParams }: PageProps<"/ranking"
   const link = (e: Escopo, p: Periodo) => `/ranking?escopo=${e}&periodo=${p}`;
 
   return (
-    <>
-      <Cabecalho nome={ctx.estudante.nome} detalhe={NOME_CURSO[ctx.estudante.curso]} />
-      <main className="mx-auto w-full max-w-3xl space-y-6 px-4 py-8">
-        <div>
-          <Link href="/inicio" className="text-sm text-muted-foreground hover:text-foreground">
-            ← Início
-          </Link>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">Classificação</h1>
-          <p className="text-muted-foreground">
-            Pontos de questões, discursivas corrigidas e conquistas. Pontos de simulado entram quando o gabarito é
-            liberado.
-          </p>
-        </div>
+    <Pagina
+      titulo="Classificação"
+      largura="estreita"
+      descricao="Pontos de questões, discursivas corrigidas e conquistas. Pontos de simulado entram quando o gabarito é liberado."
+    >
 
         <div className="flex flex-wrap gap-2">
           <Filtro opcoes={escopos} atual={escopo} href={(e) => link(e, periodo)} />
@@ -173,7 +165,6 @@ export default async function RankingPage({ searchParams }: PageProps<"/ranking"
         <p className="text-xs text-muted-foreground">
           Mostramos os 50 primeiros. Os colegas aparecem com o primeiro nome e a inicial do sobrenome.
         </p>
-      </main>
-    </>
+    </Pagina>
   );
 }

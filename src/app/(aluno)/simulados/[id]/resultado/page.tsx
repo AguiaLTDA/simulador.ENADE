@@ -1,17 +1,15 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Cabecalho } from "@/components/cabecalho";
+import { Pagina } from "@/components/aluno/pagina";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { NOME_CURSO } from "@/lib/cursos";
 import { LETRAS, NOME_COMPONENTE, type Componente } from "@/lib/questoes";
 import { formatarDataHora, formatarNota, type QuestaoResultado, type ResultadoAluno } from "@/lib/simulados";
 import { cn } from "@/lib/utils";
 import { carregarSimuladosDoAluno } from "../../dados";
 
-export const metadata = { title: "Resultado do simulado — Portal Simulado ENADE" };
+export const metadata = { title: "Resultado do simulado — Simulado ENADE UNIVC" };
 
 function porEixo(questoes: QuestaoResultado[]) {
   const mapa = new Map<string, { componente: Componente; eixo: string; total: number; acertos: number }>();
@@ -105,7 +103,7 @@ export default async function ResultadoPage({ params }: PageProps<"/simulados/[i
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
 
-  const { estudante, simulados, supabase } = await carregarSimuladosDoAluno();
+  const { simulados, supabase } = await carregarSimuladosDoAluno();
   const s = simulados.find((x) => x.id === id);
   if (!s) notFound();
   if (s.situacao !== "CONCLUIDO") redirect(`/simulados/${id}`);
@@ -117,18 +115,11 @@ export default async function ResultadoPage({ params }: PageProps<"/simulados/[i
   const componentes = (["FG", "CE"] as Componente[]).filter((c) => d.componentes[c]);
 
   return (
-    <>
-      <Cabecalho nome={estudante.nome} detalhe={`${NOME_CURSO[estudante.curso]} · ${estudante.turma}`} />
-      <main className="mx-auto w-full max-w-4xl space-y-6 px-4 py-8">
-        <div>
-          <Link href="/simulados" className="text-sm text-muted-foreground hover:text-foreground">
-            ← Simulados
-          </Link>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">{r.sessao.titulo}</h1>
-          <p className="text-muted-foreground">
-            {r.tentativa > 1 && `${r.tentativa}ª tentativa · `}Finalizado em {formatarDataHora(r.finalizada_em)}
-          </p>
-        </div>
+    <Pagina
+      titulo={r.sessao.titulo}
+      voltar={{ href: "/simulados", rotulo: "Simulados" }}
+      descricao={`${r.tentativa > 1 ? `${r.tentativa}ª tentativa · ` : ""}Finalizado em ${formatarDataHora(r.finalizada_em)}`}
+    >
 
         <div className="grid gap-4 sm:grid-cols-3">
           <Card className="sm:col-span-1">
@@ -249,7 +240,6 @@ export default async function ResultadoPage({ params }: PageProps<"/simulados/[i
             </section>
           </>
         )}
-      </main>
-    </>
+    </Pagina>
   );
 }

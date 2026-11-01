@@ -87,7 +87,7 @@ export function DiagnosticoCliente({ respondidasAntes, total }: { respondidasAnt
     return (
       <Card className="text-center">
         <CardHeader className="items-center">
-          <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+          <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-dourado-suave text-[#9a7425]">
             <Target className="size-8" />
           </div>
           <CardTitle className="text-xl">Conquista desbloqueada: Ponto de partida</CardTitle>
@@ -102,8 +102,8 @@ export function DiagnosticoCliente({ respondidasAntes, total }: { respondidasAnt
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center gap-3">
-          <Link href="/perfil" className={buttonVariants()}>
-            Ver meu perfil
+          <Link href="/conquistas" className={buttonVariants()}>
+            Ver conquistas
           </Link>
           <Link href="/inicio" className={buttonVariants({ variant: "outline" })}>
             Início
@@ -148,19 +148,36 @@ export function DiagnosticoCliente({ respondidasAntes, total }: { respondidasAnt
   if (!atual) return null;
   const progresso = (100 * feitas) / total;
 
+  // Modo foco: cobre o menu do portal enquanto o aluno responde.
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="font-medium">{NOME_AREA[atual.area]}</span>
-          <span className="tabular-nums text-muted-foreground">
-            Questão {feitas + 1} de {total}
+    <div className="fixed inset-0 z-40 overflow-y-auto bg-pagina">
+      <header className="sticky top-0 z-10 border-b bg-background">
+        <div className="mx-auto flex h-14 w-full max-w-2xl items-center justify-between gap-3 px-4">
+          <span className="min-w-0">
+            <span className="block text-[11px] font-medium uppercase tracking-wider text-verde">Diagnóstico inicial</span>
+            <span className="block truncate text-sm font-semibold">{NOME_AREA[atual.area]}</span>
+          </span>
+          <span className="flex items-center gap-3">
+            <span className="text-sm tabular-nums text-muted-foreground">
+              {feitas + 1} de {total}
+            </span>
+            <Link href="/inicio" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+              Continuar depois
+            </Link>
           </span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-muted">
-          <div className="h-full bg-primary transition-all" style={{ width: `${progresso}%` }} />
+        <div
+          className="h-0.5 bg-muted"
+          role="progressbar"
+          aria-label="Questões respondidas"
+          aria-valuenow={feitas}
+          aria-valuemin={0}
+          aria-valuemax={total}
+        >
+          <div className="h-full bg-verde transition-[width] duration-300" style={{ width: `${progresso}%` }} />
         </div>
-      </div>
+      </header>
+      <div className="mx-auto w-full max-w-2xl space-y-4 px-4 py-6">
 
       <Card>
         <CardContent className="space-y-4 pt-6">
@@ -181,13 +198,13 @@ export function DiagnosticoCliente({ respondidasAntes, total }: { respondidasAnt
                 onClick={() => setEscolha(letra)}
                 className={cn(
                   "flex w-full items-start gap-3 rounded-lg border bg-background p-3 text-left text-[15px] transition-colors hover:bg-muted/60",
-                  escolha === letra && "border-primary bg-primary/5 ring-1 ring-primary",
+                  escolha === letra && "border-verde bg-verde-suave ring-1 ring-verde",
                 )}
               >
                 <span
                   className={cn(
                     "flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-bold",
-                    escolha === letra && "border-primary bg-primary text-primary-foreground",
+                    escolha === letra && "border-verde bg-verde text-white",
                   )}
                 >
                   {letra}
@@ -205,12 +222,13 @@ export function DiagnosticoCliente({ respondidasAntes, total }: { respondidasAnt
             <span className="hidden text-xs text-muted-foreground sm:inline">
               Tecle A–E e <kbd className="rounded border bg-muted px-1 font-sans">Enter</kbd>
             </span>
-            <Button onClick={() => confirmar()} disabled={!escolha || pendente}>
+            <Button variant="acao" size="lg" onClick={() => confirmar()} disabled={!escolha || pendente}>
               {pendente ? "Salvando..." : fila.length === 1 ? "Concluir diagnóstico" : "Confirmar e avançar"}
             </Button>
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

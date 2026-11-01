@@ -41,6 +41,9 @@ export async function responderDiagnostico(questaoId: string, alternativa: strin
   });
   if (error) return { concluido: false, respondidas: 0, total: 0, erro: error.message };
   const r = data as RespostaDiagnostico;
-  if (r.concluido) revalidatePath("/perfil");
+  if (r.concluido) {
+    revalidatePath("/conquistas");
+    revalidatePath("/inicio");
+  }
   return r;
 }

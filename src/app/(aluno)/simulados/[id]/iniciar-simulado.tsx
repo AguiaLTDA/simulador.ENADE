@@ -27,7 +27,7 @@ export function IniciarSimulado({ sessaoId }: { sessaoId: string }) {
           <AlertDescription>{erro}</AlertDescription>
         </Alert>
       )}
-      <Button onClick={comecar} disabled={pendente}>
+      <Button variant="acao" size="xl" onClick={comecar} disabled={pendente}>
         {pendente ? "Iniciando..." : "Iniciar simulado"}
       </Button>
     </div>

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import type { Curso, Papel } from "@/lib/cursos";
 import { createClient } from "@/lib/supabase/server";
 
@@ -17,7 +18,8 @@ export type Contexto = {
 };
 
 // Quem está logado e qual o perfil. Redireciona para /login se não houver sessão.
-export async function obterContexto(): Promise<Contexto> {
+// Em cache por requisição: layout e página podem chamar sem repetir a consulta.
+export const obterContexto = cache(async (): Promise<Contexto> => {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getClaims();
   if (!auth?.claims?.sub) redirect("/login");
@@ -26,7 +28,7 @@ export async function obterContexto(): Promise<Contexto> {
   if (error) throw new Error(`Falha ao carregar o perfil: ${error.message}`);
 
   return { email: String(auth.claims.email ?? ""), ...(data as Omit<Contexto, "email">) };
-}
+});
 
 // Destino padrão de cada perfil.
 export function destinoInicial(ctx: Contexto): string {

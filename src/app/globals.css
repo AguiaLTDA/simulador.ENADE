@@ -7,9 +7,17 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-heading: var(--font-inter);
+  --color-verde: var(--verde);
+  --color-verde-profundo: var(--verde-profundo);
+  --color-verde-suave: var(--verde-suave);
+  --color-laranja: var(--laranja);
+  --color-laranja-hover: var(--laranja-hover);
+  --color-dourado: var(--dourado);
+  --color-dourado-suave: var(--dourado-suave);
+  --color-pagina: var(--pagina);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,38 +57,49 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Identidade UNIVC — verde institucional dominante, laranja só para ação,
+     dourado só para conquistas. Fundo claro, superfícies brancas. */
+  --verde: #006b4f;
+  --verde-profundo: #004d3a;
+  --verde-suave: #e8f2ee;
+  --laranja: #f58220;
+  --laranja-hover: #e5741a;
+  --dourado: #d6a445;
+  --dourado-suave: #faf3e3;
+  --pagina: #f7f8f7;
+
+  --background: #ffffff;
+  --foreground: #202827;
+  --card: #ffffff;
+  --card-foreground: #202827;
+  --popover: #ffffff;
+  --popover-foreground: #202827;
+  --primary: var(--verde);
+  --primary-foreground: #ffffff;
+  --secondary: var(--verde-suave);
+  --secondary-foreground: var(--verde-profundo);
+  --muted: #f1f3f2;
+  --muted-foreground: #6b7280;
+  --accent: var(--verde-suave);
+  --accent-foreground: var(--verde-profundo);
+  --destructive: #c2410c;
+  --border: #e4e8e6;
+  --input: #d7ddda;
+  --ring: var(--verde);
+  --chart-1: var(--verde);
+  --chart-2: var(--laranja);
+  --chart-3: var(--dourado);
+  --chart-4: var(--verde-profundo);
+  --chart-5: #9ca3af;
+  --radius: 0.75rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #202827;
+  --sidebar-primary: var(--verde);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--verde-suave);
+  --sidebar-accent-foreground: var(--verde-profundo);
+  --sidebar-border: #e4e8e6;
+  --sidebar-ring: var(--verde);
 }
 
 .dark {
@@ -126,5 +145,19 @@
   }
   html {
     @apply font-sans;
+  }
+  /* Foco sempre visível na navegação por teclado. */
+  :focus-visible {
+    outline: 2px solid var(--verde);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

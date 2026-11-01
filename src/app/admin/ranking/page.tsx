@@ -13,7 +13,7 @@ import { carregarRanking, lerFiltros } from "./dados";
 
 export const metadata = { title: "Classificação — Portal Simulado ENADE" };
 
-const COR_PODIO = ["text-amber-500", "text-slate-400", "text-orange-700"];
+const COR_PODIO = ["text-dourado", "text-slate-400", "text-[#b06a3b]"];
 
 export default async function RankingEquipePage({ searchParams }: PageProps<"/admin/ranking">) {
   const { staff } = await exigirStaff();

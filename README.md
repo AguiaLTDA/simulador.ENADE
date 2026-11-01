@@ -102,6 +102,17 @@ npm run test:db
 - Pontos = respostas + discursivas corrigidas + pontos extras. Pontos de simulado só contam
   quando o gabarito é liberado ao aluno (antes disso revelariam o acerto durante a prova).
 
+## Identidade visual
+
+- Tokens em `src/app/globals.css`: verde institucional `#006B4F` (dominante), verde
+  profundo `#004D3A`, laranja `#F58220` (só ações principais — texto grafite para
+  contraste AA), dourado `#D6A445` (só conquistas), fundo `#F7F8F7`, texto `#202827`.
+  Tipografia Inter, ícones Lucide, cantos de 12px.
+- Logomarca: salve o arquivo oficial em `public/marca/` e informe o caminho em
+  `LOGO_OFICIAL` (`src/components/marca.tsx`). Enquanto vazio, usa a marca em texto.
+- Telas do aluno ficam em `src/app/(aluno)/` com layout comum (cabeçalho, menu lateral
+  recolhível, barra inferior no celular). Prova e diagnóstico abrem em modo foco.
+
 ## Decisões de segurança
 
 - Gabarito e justificativa ficam em `questoes_gabarito`, sem leitura para alunos.

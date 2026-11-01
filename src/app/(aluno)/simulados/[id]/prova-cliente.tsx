@@ -140,10 +140,14 @@ export function ProvaCliente({ prova, servidorAgora }: { prova: ProvaEmAndamento
   const urgente = restante <= 10 * 60 * 1000;
 
   return (
-    <div className="min-h-svh bg-muted/30">
+    // Modo foco: cobre o menu e o cabeçalho do portal durante a prova.
+    <div className="fixed inset-0 z-40 overflow-y-auto bg-pagina">
       <header className="sticky top-0 z-10 border-b bg-background">
         <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-3 px-4">
-          <span className="min-w-0 truncate font-semibold tracking-tight">{prova.titulo}</span>
+          <span className="min-w-0">
+            <span className="block text-[11px] font-medium uppercase tracking-wider text-verde">Simulado</span>
+            <span className="block truncate text-sm font-semibold tracking-tight">{prova.titulo}</span>
+          </span>
           <div className="flex items-center gap-3">
             <span
               className={cn(
@@ -160,6 +164,19 @@ export function ProvaCliente({ prova, servidorAgora }: { prova: ProvaEmAndamento
               Finalizar
             </Button>
           </div>
+        </div>
+        <div
+          className="h-0.5 bg-muted"
+          role="progressbar"
+          aria-label="Questões respondidas"
+          aria-valuenow={respondidas.size}
+          aria-valuemin={0}
+          aria-valuemax={questoes.length}
+        >
+          <div
+            className="h-full bg-verde transition-[width] duration-300"
+            style={{ width: `${(100 * respondidas.size) / questoes.length}%` }}
+          />
         </div>
       </header>
 
@@ -212,13 +229,13 @@ export function ProvaCliente({ prova, servidorAgora }: { prova: ProvaEmAndamento
                       className={cn(
                         "flex w-full items-start gap-3 rounded-md border border-transparent px-2 py-1.5 text-left transition-colors",
                         !jaRespondida && "hover:bg-neutral-100",
-                        marcada && "border-neutral-900 bg-neutral-100",
+                        marcada && "border-verde bg-verde-suave",
                       )}
                     >
                       <span
                         className={cn(
                           "flex size-6 shrink-0 items-center justify-center rounded-full border border-neutral-400 font-sans text-xs font-bold",
-                          marcada && "border-neutral-900 bg-neutral-900 text-white",
+                          marcada && "border-verde bg-verde text-white",
                         )}
                       >
                         {letra}
@@ -273,6 +290,8 @@ export function ProvaCliente({ prova, servidorAgora }: { prova: ProvaEmAndamento
               <span className="text-sm text-muted-foreground">Questão respondida.</span>
             ) : (
               <Button
+                variant="acao"
+                size="lg"
                 onClick={responder}
                 disabled={pendente || (atual.formato === "OBJETIVA" ? !escolha : !texto.trim())}
               >
@@ -298,7 +317,7 @@ export function ProvaCliente({ prova, servidorAgora }: { prova: ProvaEmAndamento
                   aria-current={i === indice ? "step" : undefined}
                   className={cn(
                     "flex aspect-square items-center justify-center rounded-md border text-xs font-medium tabular-nums",
-                    respondidas.has(q.id) ? "border-primary bg-primary text-primary-foreground" : "bg-background",
+                    respondidas.has(q.id) ? "border-verde bg-verde text-white" : "bg-background",
                     q.formato === "DISCURSIVA" && !respondidas.has(q.id) && "border-dashed",
                     i === indice && "ring-2 ring-ring ring-offset-1",
                   )}

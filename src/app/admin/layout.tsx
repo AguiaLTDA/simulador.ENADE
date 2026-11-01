@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AbasAdmin } from "@/components/abas-admin";
 import { Cabecalho } from "@/components/cabecalho";
 import { exigirStaff } from "@/lib/contexto";
 import { descreverPerfil } from "@/lib/cursos";
@@ -22,21 +22,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <>
       <Cabecalho nome={staff.nome} detalhe={descreverPerfil(staff.papel, staff.cursos)} />
-      <nav className="border-b bg-background">
-        <div className="mx-auto flex w-full max-w-6xl gap-1 overflow-x-auto px-4 text-sm">
-          {itens
-            .filter(([, , visivel]) => visivel)
-            .map(([href, rotulo]) => (
-              <Link
-                key={href}
-                href={href}
-                className="whitespace-nowrap px-3 py-2.5 text-muted-foreground hover:text-foreground"
-              >
-                {rotulo}
-              </Link>
-            ))}
-        </div>
-      </nav>
+      <AbasAdmin itens={itens.filter(([, , visivel]) => visivel).map(([href, rotulo]) => [href, rotulo])} />
       <main className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8">{children}</main>
     </>
   );

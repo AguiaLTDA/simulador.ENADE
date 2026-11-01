@@ -36,7 +36,8 @@ export async function finalizarSimulado(sessaoId: string): Promise<ResultadoAcao
   // Já finalizado (ou tempo esgotado e finalizado em outra aba): segue para o resultado.
   if (error && !/Nenhum simulado em andamento/.test(error.message)) return { erro: error.message };
   revalidatePath("/simulados");
-  revalidatePath("/perfil");
+  revalidatePath("/desempenho");
+  revalidatePath("/conquistas");
   revalidatePath("/inicio");
   return {};
 }
