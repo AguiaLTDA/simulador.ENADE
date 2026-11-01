@@ -58,6 +58,7 @@ export default async function EditarQuestaoPage({ params }: PageProps<"/admin/qu
         pesos={pesos}
         eixos={eixos}
         cursosPermitidos={ctx.staff.cursos ?? CURSOS}
+        figuras={{ figura_url: q.figura_url, figura_alternativas_url: q.figura_alternativas_url }}
       />
     </>
   );

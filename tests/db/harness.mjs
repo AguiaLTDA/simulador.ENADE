@@ -32,10 +32,14 @@ const STUB_SUPABASE = `
   alter default privileges in schema public grant all on functions to anon, authenticated, service_role;
 `;
 
-export async function criarBanco() {
+// Migrations de dados (`*_dados_*.sql`, ex.: provas oficiais) só entram com { dados: true },
+// para não interferir nos testes de regra de negócio.
+export async function criarBanco({ dados = false } = {}) {
   const db = new PGlite();
   await db.exec(STUB_SUPABASE);
-  const arquivos = readdirSync(pastaMigrations).filter((f) => f.endsWith('.sql')).sort();
+  const arquivos = readdirSync(pastaMigrations)
+    .filter((f) => f.endsWith('.sql') && (dados || !f.includes('_dados_')))
+    .sort();
   for (const f of arquivos) {
     try {
       await db.exec(readFileSync(join(pastaMigrations, f), 'utf8'));

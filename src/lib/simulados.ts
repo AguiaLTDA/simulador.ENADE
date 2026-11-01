@@ -21,6 +21,7 @@ export type SimuladoAluno = {
   fim: string;
   duracao_minutos: number;
   total_questoes: number;
+  pontos_atividade: number; // valor da atividade (0 = sem pontuação extra)
   iniciada_em: string | null;
   finalizada_em: string | null;
   termina_em: string | null;
@@ -37,7 +38,9 @@ export type QuestaoProva = {
   eixo: string;
   formato: Formato;
   texto_apoio: string | null;
+  figura_url: string | null;
   enunciado: string;
+  figura_alternativas_url: string | null;
   alternativas: Record<Letra, string> | null;
   dificuldade: number;
   peso_pontos: number;
@@ -96,15 +99,17 @@ export type ResultadoAluno = {
   media_participantes: number | null;
   participantes: number;
   questoes: QuestaoResultado[] | null;
+  pontos_atividade: number;
+  pontos_atividade_obtidos: number | null; // null até o gabarito ser liberado
 };
 
-// Composição da prova do ENADE (portaria do Inep): Formação Geral com 2
-// discursivas e 8 objetivas; Componente Específico com 3 discursivas e 27 objetivas.
+// Composição da prova do ENADE desde 2023 (Inep): Formação Geral com 1
+// discursiva e 9 objetivas; Componente Específico com 1 discursiva e 29 objetivas.
 export const PADRAO_ENADE: { componente: Componente; formato: Formato; quantidade: number; rotulo: string }[] = [
-  { componente: "FG", formato: "DISCURSIVA", quantidade: 2, rotulo: "FG discursivas" },
-  { componente: "FG", formato: "OBJETIVA", quantidade: 8, rotulo: "FG objetivas" },
-  { componente: "CE", formato: "DISCURSIVA", quantidade: 3, rotulo: "CE discursivas" },
-  { componente: "CE", formato: "OBJETIVA", quantidade: 27, rotulo: "CE objetivas" },
+  { componente: "FG", formato: "DISCURSIVA", quantidade: 1, rotulo: "FG discursiva" },
+  { componente: "FG", formato: "OBJETIVA", quantidade: 9, rotulo: "FG objetivas" },
+  { componente: "CE", formato: "DISCURSIVA", quantidade: 1, rotulo: "CE discursiva" },
+  { componente: "CE", formato: "OBJETIVA", quantidade: 29, rotulo: "CE objetivas" },
 ];
 export const DURACAO_ENADE_MIN = 240;
 

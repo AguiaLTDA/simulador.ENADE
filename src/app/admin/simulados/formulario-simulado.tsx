@@ -24,6 +24,7 @@ export type FormSimulado = {
   inicio: string; // datetime-local, horário de Brasília
   fim: string;
   duracao_minutos: string;
+  pontos_atividade: string; // valor da atividade (0 = só treino)
   questoes: string[];
   publicada: boolean;
 };
@@ -115,6 +116,7 @@ export function FormularioSimulado({
         inicio: deCampoLocal(f.inicio),
         fim: deCampoLocal(f.fim),
         duracao_minutos: Number(f.duracao_minutos),
+        pontos_atividade: Number(f.pontos_atividade || 0),
         questoes: f.questoes,
         publicada,
       });
@@ -189,6 +191,24 @@ export function FormularioSimulado({
             />
             <p className="text-xs text-muted-foreground">O ENADE tem {DURACAO_ENADE_MIN} minutos (4 horas).</p>
           </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="pontos_atividade">Valor da atividade (pontos)</Label>
+            <Input
+              id="pontos_atividade"
+              type="number"
+              min={0}
+              max={100000}
+              step={1}
+              value={f.pontos_atividade}
+              onChange={(e) => set("pontos_atividade", e.target.value)}
+              className="sm:max-w-48"
+            />
+            <p className="text-xs text-muted-foreground">
+              Quando o gabarito é liberado, cada aluno recebe valor × nota estimada ÷ 100 (ex.: 1000 pontos e nota
+              72 = 720 pontos), além dos pontos de cada questão. Use 0 para um simulado só de treino. Pode ser
+              alterado a qualquer momento; o placar é recalculado.
+            </p>
+          </div>
           <div className="space-y-1.5">
             <Label htmlFor="inicio">Abertura</Label>
             <Input
@@ -214,8 +234,8 @@ export function FormularioSimulado({
           <div className="space-y-1">
             <CardTitle>Questões ({f.questoes.length})</CardTitle>
             <CardDescription>
-              Padrão ENADE: 2 discursivas e 8 objetivas de Formação Geral; 3 discursivas e 27 objetivas do
-              Componente Específico.
+              Padrão ENADE (desde 2023): 1 discursiva e 9 objetivas de Formação Geral; 1 discursiva e 29
+              objetivas do Componente Específico.
             </CardDescription>
           </div>
           {!bloqueado && (

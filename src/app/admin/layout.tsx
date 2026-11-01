@@ -14,6 +14,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     ["/admin/simulados", "Simulados", true],
     ["/admin/correcoes", "Correções", true],
     ["/admin/ranking", "Classificação", true],
+    ["/admin/pontuacao", "Pontuação", gestor],
     ["/admin/diagnostico", "Diagnóstico inicial", true],
     ["/admin/equipe", "Equipe", staff.papel === "ADMIN"],
     ["/admin/configuracoes", "Configurações", staff.papel === "ADMIN"],

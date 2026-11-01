@@ -32,6 +32,7 @@ export default async function NovoSimuladoPage() {
           inicio: paraCampoLocal(inicio.toISOString()),
           fim: paraCampoLocal(fim.toISOString()),
           duracao_minutos: String(DURACAO_ENADE_MIN),
+          pontos_atividade: "0",
           questoes: [],
           publicada: false,
         }}

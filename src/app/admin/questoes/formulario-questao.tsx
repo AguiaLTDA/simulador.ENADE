@@ -30,11 +30,13 @@ export function FormularioQuestao({
   pesos,
   eixos,
   cursosPermitidos,
+  figuras,
 }: {
   inicial: DadosQuestao;
   pesos: PesosPadrao;
   eixos: string[];
   cursosPermitidos: Curso[];
+  figuras?: { figura_url: string | null; figura_alternativas_url: string | null };
 }) {
   const router = useRouter();
   const [q, setQ] = useState<DadosQuestao>(inicial);
@@ -335,7 +337,7 @@ export function FormularioQuestao({
             Mostrar gabarito
           </label>
         </div>
-        <PreviaEnade q={q} mostrarGabarito={mostrarGabarito} />
+        <PreviaEnade q={q} mostrarGabarito={mostrarGabarito} figuras={figuras} />
         <p className="text-xs text-muted-foreground">
           Vale <strong>{Number.isFinite(pesoEfetivo) ? pesoEfetivo : "—"} pts</strong> na base, antes dos
           bônus de tempo e sequência.

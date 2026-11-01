@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { Pagina } from "@/components/aluno/pagina";
+import { FiguraQuestao } from "@/components/figura-questao";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,7 +54,9 @@ function Questao({ q }: { q: QuestaoResultado }) {
       </summary>
       <div className="space-y-4 border-t p-4 text-[15px] leading-relaxed">
         {q.texto_apoio && <p className="whitespace-pre-wrap rounded-lg bg-muted/60 p-3">{q.texto_apoio}</p>}
+        <FiguraQuestao caminho={q.figura_url} descricao={`Figura da questão ${q.numero}`} />
         <p className="whitespace-pre-wrap">{q.enunciado}</p>
+        <FiguraQuestao caminho={q.figura_alternativas_url} descricao={`Alternativas da questão ${q.numero}`} />
         {q.formato === "OBJETIVA" && q.alternativas ? (
           <ol className="space-y-1.5">
             {LETRAS.map((l) => (
@@ -144,7 +147,14 @@ export default async function ResultadoPage({ params }: PageProps<"/simulados/[i
           <Card>
             <CardHeader>
               <CardDescription>Pontos na classificação</CardDescription>
-              <CardTitle className="text-3xl tabular-nums">+{d.pontos}</CardTitle>
+              <CardTitle className="text-3xl tabular-nums">+{d.pontos + (r.pontos_atividade_obtidos ?? 0)}</CardTitle>
+              {r.pontos_atividade > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {r.pontos_atividade_obtidos === null
+                    ? `Atividade avaliativa: até ${r.pontos_atividade} pontos, proporcionais à nota.`
+                    : `${d.pontos} das questões + ${r.pontos_atividade_obtidos} da atividade (${r.pontos_atividade} × nota ÷ 100).`}
+                </p>
+              )}
               {!r.gabarito_liberado && (
                 <p className="text-xs text-muted-foreground">
                   Entram na classificação em {formatarDataHora(r.sessao.fim)}, com o gabarito.
@@ -199,7 +209,7 @@ export default async function ResultadoPage({ params }: PageProps<"/simulados/[i
         {!r.gabarito_liberado || !r.questoes ? (
           <Alert>
             <AlertDescription>
-              O gabarito, as justificativas e a correção questão a questão serão liberados em{" "}
+              O gabarito, o padrão de resposta das discursivas e a correção questão a questão serão liberados em{" "}
               <strong>{formatarDataHora(r.sessao.fim)}</strong>, quando o simulado fecha para todos os colegas.
             </AlertDescription>
           </Alert>

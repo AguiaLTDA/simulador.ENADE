@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarClock, CheckCircle2, CircleSlash, Clock, PlayCircle } from "lucide-react";
+import { Award, CalendarClock, CheckCircle2, CircleSlash, Clock, PlayCircle } from "lucide-react";
 import { Pagina, Secao } from "@/components/aluno/pagina";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -66,11 +66,22 @@ function Lista({ itens }: { itens: SimuladoAluno[] }) {
                   <Icone className="size-3" />
                   {NOME_SITUACAO[s.situacao]}
                 </span>
+                {s.pontos_atividade > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-[#fbf3e0] px-1.5 py-0.5 text-[11px] font-medium text-[#7a5a12]">
+                    <Award className="size-3" />
+                    Atividade avaliativa · até {s.pontos_atividade.toLocaleString("pt-BR")} pontos
+                  </span>
+                )}
               </div>
               <p className="text-sm text-muted-foreground">
                 {s.total_questoes} questões · {formatarDuracao(s.duracao_minutos)} · {formatarDataHora(s.inicio)} a{" "}
                 {formatarDataHora(s.fim)}
               </p>
+              {s.pontos_atividade > 0 && ["DISPONIVEL", "EM_ANDAMENTO"].includes(s.situacao) && (
+                <p className="text-xs font-medium text-foreground/80">
+                  Entrega até {formatarDataHora(s.fim)}. Sua pontuação é proporcional à nota estimada.
+                </p>
+              )}
               {s.nova_tentativa && s.situacao === "DISPONIVEL" && (
                 <p className="text-xs font-medium text-verde">A coordenação liberou uma nova tentativa para você.</p>
               )}

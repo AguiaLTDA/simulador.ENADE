@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Clock } from "lucide-react";
+import { FiguraQuestao } from "@/components/figura-questao";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -212,7 +213,9 @@ export function ProvaCliente({ prova, servidorAgora }: { prova: ProvaEmAndamento
             </div>
 
             {atual.texto_apoio && <p className="mb-4 whitespace-pre-wrap text-justify">{atual.texto_apoio}</p>}
+            <FiguraQuestao caminho={atual.figura_url} descricao={`Figura da questão ${indice + 1}`} />
             <p className="whitespace-pre-wrap text-justify">{atual.enunciado}</p>
+            <FiguraQuestao caminho={atual.figura_alternativas_url} descricao={`Alternativas da questão ${indice + 1}`} />
 
             {atual.formato === "OBJETIVA" && atual.alternativas ? (
               <div className="mt-4 space-y-2" role="radiogroup" aria-label="Alternativas">

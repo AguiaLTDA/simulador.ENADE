@@ -1,8 +1,17 @@
+import { FiguraQuestao } from "@/components/figura-questao";
 import { cn } from "@/lib/utils";
 import { LETRAS, NOME_COMPONENTE, type DadosQuestao } from "@/lib/questoes";
 
 // Pré-visualização no formato do caderno de prova do ENADE.
-export function PreviaEnade({ q, mostrarGabarito }: { q: DadosQuestao; mostrarGabarito: boolean }) {
+export function PreviaEnade({
+  q,
+  mostrarGabarito,
+  figuras,
+}: {
+  q: DadosQuestao;
+  mostrarGabarito: boolean;
+  figuras?: { figura_url: string | null; figura_alternativas_url: string | null };
+}) {
   const alternativas = [q.alt_a, q.alt_b, q.alt_c, q.alt_d, q.alt_e];
 
   return (
@@ -13,10 +22,12 @@ export function PreviaEnade({ q, mostrarGabarito }: { q: DadosQuestao; mostrarGa
       </div>
 
       {q.texto_apoio.trim() && <p className="mb-4 whitespace-pre-wrap text-justify">{q.texto_apoio}</p>}
+      <FiguraQuestao caminho={figuras?.figura_url} descricao="Figura da questão" />
 
       <p className={cn("whitespace-pre-wrap text-justify", !q.enunciado.trim() && "italic text-neutral-400")}>
         {q.enunciado.trim() || "O enunciado aparecerá aqui."}
       </p>
+      <FiguraQuestao caminho={figuras?.figura_alternativas_url} descricao="Alternativas da questão" />
 
       {q.formato === "OBJETIVA" ? (
         <ol className="mt-4 space-y-2">

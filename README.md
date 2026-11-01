@@ -71,8 +71,13 @@ npm run test:db
 
 ## Simulados
 
-- Coordenação monta o simulado em `/admin/simulados` (sorteio no padrão ENADE:
-  FG 2 discursivas + 8 objetivas; CE 3 discursivas + 27 objetivas; 4 horas).
+- Coordenação monta o simulado em `/admin/simulados` (sorteio no padrão ENADE desde 2023:
+  FG 1 discursiva + 9 objetivas; CE 1 discursiva + 29 objetivas; 4 horas).
+- Valor da atividade (opcional): o simulado vira atividade avaliativa e o aluno recebe
+  valor × nota estimada ÷ 100 quando o gabarito é liberado. Pode ser alterado a qualquer
+  momento (o placar é recalculado na hora).
+- Questões podem ter figura (`figura_url`) e figura das alternativas
+  (`figura_alternativas_url`), com caminho relativo a `public/`.
 - Aluno faz em `/simulados`: cronômetro do servidor, resposta definitiva por questão,
   finalização automática quando o tempo acaba.
 - Nota estimada (0–100) com os pesos do ENADE: FG 25% (objetivas 60%, discursivas 40%)
@@ -93,13 +98,29 @@ npm run test:db
   individual. A tentativa anulada fica no histórico; questões já respondidas não pontuam
   de novo.
 
+## Prova ENADE 2023 (Eng. Mecânica e Eng. de Produção)
+
+- `supabase/migrations/20261101000300_dados_enade_2023.sql`: as 70 questões oficiais do
+  Inep (FG comum + CE de cada curso), com gabarito definitivo e padrão de resposta das
+  discursivas; figuras em `public/enade2023/`.
+- Uma atividade avaliativa por curso, aberta até 10/11/2026 23h59, valendo 1000 pontos.
+  Gabarito e padrão de resposta aparecem para o aluno quando a atividade encerra.
+- Migrations com `_dados_` no nome não entram nos testes de regra de negócio; o teste
+  `tests/db/pontuacao.test.mjs` as carrega explicitamente.
+
+## Pontuação (`/admin/pontuacao`)
+
+- Coordenação (do curso) e ADMIN veem a origem dos pontos de cada aluno (questões,
+  atividades, extras, ajustes), editam o valor das atividades e lançam bônus ou desconto
+  com motivo. Ajustes ficam em `ajustes_pontuacao` e na `auditoria`.
+
 ## Classificação
 
 - Aluno (`/ranking`): posição no curso, na turma ou entre todos os cursos; desde o início,
   últimos 30 ou 7 dias. Colegas aparecem como "Maria S." (primeiro nome + inicial).
 - Coordenação (`/admin/ranking`): nomes completos, pontos, questões, % de acerto, simulados
   e última atividade, com filtros por curso, turma, situação e período, e exportação CSV.
-- Pontos = respostas + discursivas corrigidas + pontos extras. Pontos de simulado só contam
+- Pontos = respostas + discursivas corrigidas + atividades avaliativas + pontos extras + ajustes. Pontos de simulado só contam
   quando o gabarito é liberado ao aluno (antes disso revelariam o acerto durante a prova).
 
 ## Identidade visual

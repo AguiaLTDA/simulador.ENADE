@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FiguraQuestao } from "@/components/figura-questao";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { exigirStaff } from "@/lib/contexto";
 import { CURSOS, SIGLA_CURSO, type Curso } from "@/lib/cursos";
@@ -22,6 +23,7 @@ type Linha = {
   questoes: {
     enunciado: string;
     texto_apoio: string | null;
+    figura_url: string | null;
     eixo: string;
     componente: Componente;
     peso_pontos: number;
@@ -45,7 +47,7 @@ export default async function CorrecoesPage({ searchParams }: PageProps<"/admin/
     .select(
       `id, resposta_texto, criado_em, tentativa_n, sessao_id, estudante_id, tentativa_sessao,
        estudantes!inner(nome, curso, turma),
-       questoes(enunciado, texto_apoio, eixo, componente, peso_pontos, questoes_gabarito(justificativa)),
+       questoes(enunciado, texto_apoio, figura_url, eixo, componente, peso_pontos, questoes_gabarito(justificativa)),
        sessoes(titulo),
        correcoes_discursivas(nota, comentario, corrigida_em)`,
     )
@@ -156,6 +158,7 @@ export default async function CorrecoesPage({ searchParams }: PageProps<"/admin/
                   <summary className="cursor-pointer font-medium">Enunciado e padrão de resposta</summary>
                   <div className="mt-2 space-y-2">
                     {r.questoes.texto_apoio && <p className="whitespace-pre-wrap">{r.questoes.texto_apoio}</p>}
+                    <FiguraQuestao caminho={r.questoes.figura_url} descricao="Figura da questão" />
                     <p className="whitespace-pre-wrap">{r.questoes.enunciado}</p>
                     {r.questoes.questoes_gabarito?.justificativa && (
                       <div className="rounded-md border bg-background p-3">

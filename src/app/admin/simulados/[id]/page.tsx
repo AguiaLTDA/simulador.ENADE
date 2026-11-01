@@ -50,6 +50,7 @@ export default async function EditarSimuladoPage({ params }: PageProps<"/admin/s
           inicio: paraCampoLocal(s.inicio),
           fim: paraCampoLocal(s.fim),
           duracao_minutos: String(s.duracao_minutos),
+          pontos_atividade: String(s.pontos_atividade ?? 0),
           questoes: s.questoes as string[],
           publicada: s.publicada,
         }}

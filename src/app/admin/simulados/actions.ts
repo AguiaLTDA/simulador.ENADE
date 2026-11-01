@@ -12,6 +12,7 @@ export type DadosSimulado = {
   inicio: string; // ISO com fuso
   fim: string;
   duracao_minutos: number;
+  pontos_atividade: number;
   questoes: string[];
   publicada: boolean;
 };
