@@ -1,14 +1,21 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-// Logomarca oficial: salve o arquivo em public/marca/ e informe o caminho aqui
-// (ex.: "/marca/univc.svg"). Enquanto estiver vazio, usa a marca em texto.
-const LOGO_OFICIAL: string | null = null;
+// Logomarca oficial (public/marca/). Com null, usa a marca em texto.
+const LOGO_OFICIAL: string | null = "/marca/univc.png";
 
 function LogoUnivc({ className }: { className?: string }) {
   if (LOGO_OFICIAL) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={LOGO_OFICIAL} alt="UNIVC" className={cn("h-7 w-auto", className)} />;
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={LOGO_OFICIAL}
+        alt="UNIVC — Centro Universitário Vale do Cricaré"
+        width={384}
+        height={121}
+        className={cn("h-8 w-auto", className)}
+      />
+    );
   }
   return (
     <span className={cn("text-lg font-extrabold tracking-tight text-verde", className)} aria-label="UNIVC">
@@ -36,11 +43,8 @@ export function MarcaCompacta({ href = "/", recolhida = false }: { href?: string
 export function Marca() {
   return (
     <div className="flex flex-col items-center gap-2 text-center">
-      <LogoUnivc className="text-3xl" />
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">Simulado ENADE</h1>
-        <p className="text-xs text-muted-foreground">Centro Universitário Vale do Cricaré</p>
-      </div>
+      <LogoUnivc className={LOGO_OFICIAL ? "h-16" : "text-3xl"} />
+      <h1 className="text-xl font-semibold tracking-tight">Simulado ENADE</h1>
     </div>
   );
 }

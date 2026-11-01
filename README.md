@@ -108,8 +108,8 @@ npm run test:db
   profundo `#004D3A`, laranja `#F58220` (só ações principais — texto grafite para
   contraste AA), dourado `#D6A445` (só conquistas), fundo `#F7F8F7`, texto `#202827`.
   Tipografia Inter, ícones Lucide, cantos de 12px.
-- Logomarca: salve o arquivo oficial em `public/marca/` e informe o caminho em
-  `LOGO_OFICIAL` (`src/components/marca.tsx`). Enquanto vazio, usa a marca em texto.
+- Logomarca oficial em `public/marca/univc.png` (caminho em `LOGO_OFICIAL`,
+  `src/components/marca.tsx`; com null, usa a marca em texto).
 - Telas do aluno ficam em `src/app/(aluno)/` com layout comum (cabeçalho, menu lateral
   recolhível, barra inferior no celular). Prova e diagnóstico abrem em modo foco.
 
