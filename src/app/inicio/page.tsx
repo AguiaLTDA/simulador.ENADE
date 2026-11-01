@@ -43,7 +43,7 @@ export default async function InicioPage() {
             <div className="min-w-0 flex-1">
               <p className="font-medium">Comece pelo diagnóstico inicial</p>
               <p className="text-sm text-muted-foreground">
-                {resumo.diagnostico.total} questões básicas, cerca de 20 minutos. Vale conquista e pontos.
+                {resumo.diagnostico.total} questões básicas, cerca de 15 minutos. Vale conquista e pontos.
               </p>
             </div>
             <Link href="/perfil/diagnostico" className={buttonVariants()}>

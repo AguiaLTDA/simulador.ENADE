@@ -53,9 +53,20 @@ test('aluno não lê questões, gabarito, respostas nem resultado do diagnóstic
   await como(db, null, () => erro(db.query(`select public.iniciar_diagnostico()`), /permission denied/));
 });
 
-test('iniciar devolve 30 questões sem gabarito', async () => {
+test('20 questões ativas: Português 7, Conhecimentos gerais 6, Matemática e raciocínio lógico 7', async () => {
+  const { rows } = await db.query(`
+    select area, count(*)::int n from public.diagnostico_questoes where ativa group by area order by area`);
+  assert.deepEqual(rows, [
+    { area: 'PORTUGUES', n: 7 }, { area: 'ATUALIDADES', n: 6 }, { area: 'MATEMATICA', n: 7 },
+  ]);
+  await erro(db.query(`update public.diagnostico_questoes set ativa = true where area = 'PORTUGUES' and ordem = 4`),
+    /no máximo 20/);
+});
+
+test('iniciar devolve 20 questões sem gabarito', async () => {
   const j = (await rpc(u.a1, `select public.iniciar_diagnostico() as j`)).j;
-  assert.equal(j.questoes.length, 30);
+  assert.equal(j.questoes.length, 20);
+  assert.equal(j.total, 20);
   assert.equal(j.concluido, false);
   assert.ok(j.questoes.every((q) => !('gabarito' in q) && Object.keys(q.alternativas).length === 5));
 });
@@ -63,7 +74,7 @@ test('iniciar devolve 30 questões sem gabarito', async () => {
 test('responder: sem devolutiva; conclusão dá badge e pontos independentemente de acertos', async () => {
   const { rows: questoes } = await db.query(
     `select q.id, q.area, g.gabarito from public.diagnostico_questoes q
-       join public.diagnostico_gabarito g on g.questao_id = q.id order by q.area, q.ordem`);
+       join public.diagnostico_gabarito g on g.questao_id = q.id where q.ativa order by q.area, q.ordem`);
 
   await rpc(u.a2, `select public.iniciar_diagnostico()`);
   let ultima;
@@ -93,15 +104,15 @@ test('responder: sem devolutiva; conclusão dá badge e pontos independentemente
 
   // Resultado por área (só equipe)
   const r = (await rpc(u.admin, `select resultado, acertos, total from public.diagnostico_resultados where estudante_id = $1`, [u.a2]));
-  assert.equal(r.acertos, 10);
-  assert.equal(r.total, 30);
+  assert.equal(r.acertos, 7);
+  assert.equal(r.total, 20);
   assert.equal(r.resultado.PORTUGUES.nivel, 'AVANCADO');
   assert.equal(r.resultado.MATEMATICA.nivel, 'INICIAL');
   assert.equal(r.resultado.ATUALIDADES.percentual, 0);
 });
 
 test('resposta repetida e alternativa inválida são recusadas', async () => {
-  const { rows } = await db.query(`select id from public.diagnostico_questoes order by area, ordem limit 1`);
+  const { rows } = await db.query(`select id from public.diagnostico_questoes where ativa order by area, ordem limit 1`);
   await como(db, u.a1, async () => {
     await db.query(`select public.responder_diagnostico($1, 'C')`, [rows[0].id]);
     await erro(db.query(`select public.responder_diagnostico($1, 'D')`, [rows[0].id]), /já respondida/);
@@ -114,4 +125,22 @@ test('coordenador só vê resultados dos alunos do seu curso', async () => {
   assert.equal(doCoordVet.rows.length, 0); // a1 (ADS) e a2 (MEC) não são de VET
   const doAdmin = await como(db, u.admin, () => db.query(`select estudante_id from public.diagnostico_resultados`));
   assert.equal(doAdmin.rows.length, 2);
+});
+
+test('quem já respondeu todas as ativas é concluído ao reabrir; questão inativa é recusada', async () => {
+  const { rows: inativa } = await db.query(`select id from public.diagnostico_questoes where not ativa limit 1`);
+  await como(db, u.vet, () => db.query(`select public.iniciar_diagnostico()`));
+  await como(db, u.vet, () => erro(db.query(`select public.responder_diagnostico($1, 'A')`, [inativa[0].id]), /indisponível/));
+
+  // Simula aluno que respondeu as 20 atuais quando o diagnóstico ainda tinha 30 (sem ter concluído).
+  await db.query(`
+    insert into public.diagnostico_respostas (estudante_id, questao_id, alternativa, correta)
+    select $1, q.id, 'A', g.gabarito = 'A'
+      from public.diagnostico_questoes q join public.diagnostico_gabarito g on g.questao_id = q.id
+     where q.ativa`, [u.vet]);
+  const j = (await rpc(u.vet, `select public.iniciar_diagnostico() as j`)).j;
+  assert.equal(j.concluido, true);
+  assert.equal(j.questoes.length, 0);
+  const resumo = (await rpc(u.vet, `select public.meu_resumo() as r`)).r;
+  assert.ok(resumo.conquistas.some((c) => c.codigo === 'DIAGNOSTICO_INICIAL'));
 });

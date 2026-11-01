@@ -79,7 +79,7 @@ export default async function PerfilPage() {
             <CardDescription>
               {d.concluido
                 ? "Concluído. Obrigado! Suas respostas ajudam a coordenação a planejar a sua preparação."
-                : `${d.total} questões básicas de Português, Atualidades e Matemática. Leva cerca de 20 minutos e vale a conquista "Ponto de partida" e pontos no ranking — independentemente de acertos.`}
+                : `${d.total} questões básicas de Português, Conhecimentos gerais e Matemática e raciocínio lógico. Leva cerca de 15 minutos e vale a conquista "Ponto de partida" e pontos no ranking — independentemente de acertos.`}
             </CardDescription>
           </CardHeader>
           {!d.concluido && (

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useEffect, useEffectEvent, useState, useTransition } from "react";
 import { Target } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -40,11 +40,12 @@ export function DiagnosticoCliente({ respondidasAntes, total }: { respondidasAnt
     });
   }
 
-  function confirmar() {
-    if (!atual || !escolha) return;
+  function confirmar(letra = escolha) {
+    if (!atual || !letra || pendente) return;
     setErro(null);
+    setEscolha(letra);
     iniciar(async () => {
-      const r = await responderDiagnostico(atual.id, escolha);
+      const r = await responderDiagnostico(atual.id, letra);
       if (r.erro) return setErro(r.erro);
       setEscolha(null);
       setFeitas(r.respondidas);
@@ -57,6 +58,30 @@ export function DiagnosticoCliente({ respondidasAntes, total }: { respondidasAnt
       }
     });
   }
+
+  // Teclado: A–E (ou 1–5) escolhe a alternativa; Enter confirma e avança.
+  const aoTeclar = useEffectEvent((e: KeyboardEvent) => {
+    if (fase !== "respondendo" || !atual || e.ctrlKey || e.metaKey || e.altKey) return;
+    const tecla = e.key.toUpperCase();
+    const porNumero = "ABCDE"[Number(tecla) - 1];
+    if ("ABCDE".includes(tecla) && tecla.length === 1) {
+      setEscolha(tecla);
+    } else if (/^[1-5]$/.test(tecla)) {
+      setEscolha(porNumero);
+    } else if (e.key === "Enter") {
+      // Com o foco numa alternativa, o Enter confirma essa alternativa.
+      const focada = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-letra]")?.dataset.letra;
+      const letra = focada ?? escolha;
+      if (!letra) return;
+      e.preventDefault();
+      confirmar(letra);
+    }
+  });
+
+  useEffect(() => {
+    window.addEventListener("keydown", aoTeclar);
+    return () => window.removeEventListener("keydown", aoTeclar);
+  }, []);
 
   if (fase === "concluido") {
     return (
@@ -98,12 +123,13 @@ export function DiagnosticoCliente({ respondidasAntes, total }: { respondidasAnt
         <CardContent className="space-y-4 text-sm">
           <ul className="list-disc space-y-1 pl-5">
             <li>Português — leitura, ortografia e norma-padrão</li>
-            <li>Atualidades — cidadania, meio ambiente, tecnologia e sociedade</li>
+            <li>Conhecimentos gerais — cidadania, meio ambiente, tecnologia e sociedade</li>
             <li>Matemática e raciocínio lógico — porcentagem, proporção, sequências e lógica</li>
           </ul>
           <ul className="space-y-1 text-muted-foreground">
             <li>• Não é prova: você não perde pontos por errar e não verá a correção.</li>
             <li>• Cada resposta é definitiva. Se precisar parar, continue depois de onde parou.</li>
+            <li>• Atalho: tecle A a E para escolher e Enter para confirmar e avançar.</li>
             <li>• Ao terminar, você ganha a conquista “Ponto de partida” e pontos no ranking.</li>
           </ul>
           {erro && (
@@ -151,6 +177,7 @@ export function DiagnosticoCliente({ respondidasAntes, total }: { respondidasAnt
                 type="button"
                 role="radio"
                 aria-checked={escolha === letra}
+                data-letra={letra}
                 onClick={() => setEscolha(letra)}
                 className={cn(
                   "flex w-full items-start gap-3 rounded-lg border bg-background p-3 text-left text-[15px] transition-colors hover:bg-muted/60",
@@ -174,8 +201,11 @@ export function DiagnosticoCliente({ respondidasAntes, total }: { respondidasAnt
               <AlertDescription>{erro}</AlertDescription>
             </Alert>
           )}
-          <div className="flex justify-end">
-            <Button onClick={confirmar} disabled={!escolha || pendente}>
+          <div className="flex items-center justify-end gap-3">
+            <span className="hidden text-xs text-muted-foreground sm:inline">
+              Tecle A–E e <kbd className="rounded border bg-muted px-1 font-sans">Enter</kbd>
+            </span>
+            <Button onClick={() => confirmar()} disabled={!escolha || pendente}>
               {pendente ? "Salvando..." : fila.length === 1 ? "Concluir diagnóstico" : "Confirmar e avançar"}
             </Button>
           </div>

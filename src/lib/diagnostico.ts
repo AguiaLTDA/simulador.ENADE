@@ -5,7 +5,7 @@ export const AREAS: Area[] = ["PORTUGUES", "ATUALIDADES", "MATEMATICA"];
 
 export const NOME_AREA: Record<Area, string> = {
   PORTUGUES: "Português",
-  ATUALIDADES: "Atualidades",
+  ATUALIDADES: "Conhecimentos gerais",
   MATEMATICA: "Matemática e raciocínio lógico",
 };
 
