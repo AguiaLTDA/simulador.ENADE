@@ -108,6 +108,15 @@ npm run test:db
 - Migrations com `_dados_` no nome não entram nos testes de regra de negócio; o teste
   `tests/db/pontuacao.test.mjs` as carrega explicitamente.
 
+## Provas ENADE 2017, 2019 e 2021 (ADS, Eng. Mecânica, Eng. de Produção)
+
+- `supabase/migrations/20261102000100_dados_enade_2017_2019_2021.sql`: 144 questões
+  oficiais do Inep publicadas no banco — FG e CE de Eng. Mecânica 2019, Eng. de Produção
+  2019, ADS 2021 e ADS 2017 — com gabarito definitivo e padrão de resposta. Questões
+  anuladas pelo Inep ficaram de fora. Figuras em `public/enade2017/`, `enade2019/`, `enade2021/`.
+- Um simulado por prova ("… (prova completa)", ordem do caderno) criado como rascunho,
+  sem valor em pontos: a coordenação define a janela em `/admin/simulados` e publica.
+
 ## Pontuação (`/admin/pontuacao`)
 
 - Coordenação (do curso) e ADMIN veem a origem dos pontos de cada aluno (questões,

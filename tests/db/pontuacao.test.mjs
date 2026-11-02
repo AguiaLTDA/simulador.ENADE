@@ -79,6 +79,35 @@ test('prova ENADE 2023 carregada: 70 questões publicadas e uma atividade por cu
   assert.equal(lista[0].pontos_atividade, 1000);
 });
 
+test('provas ENADE 2017, 2019 e 2021: 144 questões publicadas e um simulado-rascunho por prova', async () => {
+  const { rows } = await db.query(`
+    select substr(q.fonte, 7, 4) ano, q.cursos::text cursos, count(*)::int n,
+           count(*) filter (where q.status = 'PUBLICADA')::int publicadas,
+           count(*) filter (where (q.formato = 'OBJETIVA' and g.gabarito is null)
+                             or (q.formato = 'DISCURSIVA' and coalesce(g.justificativa, '') = ''))::int sem_resposta
+      from public.questoes q left join public.questoes_gabarito g on g.questao_id = q.id
+     where q.fonte ~ '^ENADE 20(17|19|21) '
+     group by 1, 2 order by 1, 2`);
+  assert.deepEqual(rows.map((r) => [r.ano, r.cursos, r.n, r.publicadas, r.sem_resposta]), [
+    ['2017', '{ADS}', 29, 29, 0], ['2017', '{ALL}', 10, 10, 0],
+    ['2019', '{ALL}', 9, 9, 0], ['2019', '{ENG_MEC}', 26, 26, 0], ['2019', '{ENG_PROD}', 30, 30, 0],
+    ['2021', '{ADS}', 30, 30, 0], ['2021', '{ALL}', 10, 10, 0],
+  ]);
+
+  const { rows: sessoes } = await db.query(`
+    select curso, cardinality(questoes) n, publicada, pontos_atividade
+      from public.sessoes where titulo like '%(prova completa)' order by curso, cardinality(questoes)`);
+  assert.deepEqual(sessoes, [
+    { curso: 'ENG_MEC', n: 35, publicada: false, pontos_atividade: 0 },
+    { curso: 'ENG_PROD', n: 39, publicada: false, pontos_atividade: 0 },
+    { curso: 'ADS', n: 39, publicada: false, pontos_atividade: 0 },
+    { curso: 'ADS', n: 40, publicada: false, pontos_atividade: 0 },
+  ]);
+  // Rascunho não aparece para o aluno.
+  const lista = (await rpc(u.mec, `select public.meus_simulados() j`)).j;
+  assert.ok(lista.every((s) => !s.titulo.endsWith('(prova completa)')));
+});
+
 test('a prova entrega as figuras e começa pela Formação Geral, sem gabarito', async () => {
   const { rows: [s] } = await db.query(`select id from public.sessoes where titulo like 'ENADE 2023%' and curso = 'ENG_PROD'`);
   const prova = (await rpc(u.prod, `select public.iniciar_simulado($1) j`, [s.id])).j;
