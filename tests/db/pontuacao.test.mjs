@@ -48,7 +48,7 @@ before(async () => {
   q.b = await salvarQuestao({ gabarito: 'B' });
 });
 
-test('prova ENADE 2023 carregada: 70 questões publicadas e uma atividade por curso até 10/11', async () => {
+test('prova ENADE 2023 carregada: 70 questões publicadas e uma atividade por curso, prorrogada até 27/11', async () => {
   const { rows: [c] } = await db.query(`
     select count(*)::int total,
            count(*) filter (where status = 'PUBLICADA')::int publicadas,
@@ -65,7 +65,7 @@ test('prova ENADE 2023 carregada: 70 questões publicadas e uma atividade por cu
   assert.equal(semGabarito.length, 0);
 
   const { rows: sessoes } = await db.query(`
-    select curso, cardinality(questoes) n, pontos_atividade, duracao_minutos, fim = '2026-11-10 23:59:59-03'::timestamptz prazo
+    select curso, cardinality(questoes) n, pontos_atividade, duracao_minutos, fim = '2026-11-27 23:59:00-03'::timestamptz prazo
       from public.sessoes where titulo like 'ENADE 2023%' order by curso`);
   assert.deepEqual(sessoes, [
     { curso: 'ENG_MEC', n: 40, pontos_atividade: 1000, duracao_minutos: 240, prazo: true },
