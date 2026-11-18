@@ -79,7 +79,7 @@ test('prova ENADE 2023 carregada: 70 questões publicadas e uma atividade por cu
   assert.equal(lista[0].pontos_atividade, 1000);
 });
 
-test('provas ENADE 2017, 2019 e 2021: 144 questões publicadas e um simulado-rascunho por prova', async () => {
+test('provas ENADE 2017, 2019 e 2021: 144 questões publicadas e um simulado publicado por prova', async () => {
   const { rows } = await db.query(`
     select substr(q.fonte, 7, 4) ano, q.cursos::text cursos, count(*)::int n,
            count(*) filter (where q.status = 'PUBLICADA')::int publicadas,
@@ -95,17 +95,18 @@ test('provas ENADE 2017, 2019 e 2021: 144 questões publicadas e um simulado-ras
   ]);
 
   const { rows: sessoes } = await db.query(`
-    select curso, cardinality(questoes) n, publicada, pontos_atividade
+    select curso, cardinality(questoes) n, publicada, pontos_atividade,
+           to_char(fim at time zone 'America/Sao_Paulo', 'DD/MM HH24:MI') fim
       from public.sessoes where titulo like '%(prova completa)' order by curso, cardinality(questoes)`);
   assert.deepEqual(sessoes, [
-    { curso: 'ENG_MEC', n: 35, publicada: false, pontos_atividade: 0 },
-    { curso: 'ENG_PROD', n: 39, publicada: false, pontos_atividade: 0 },
-    { curso: 'ADS', n: 39, publicada: false, pontos_atividade: 0 },
-    { curso: 'ADS', n: 40, publicada: false, pontos_atividade: 0 },
+    { curso: 'ENG_MEC', n: 35, publicada: true, pontos_atividade: 0, fim: '29/11 23:59' },
+    { curso: 'ENG_PROD', n: 39, publicada: true, pontos_atividade: 0, fim: '29/11 23:59' },
+    { curso: 'ADS', n: 39, publicada: true, pontos_atividade: 0, fim: '27/11 23:59' },
+    { curso: 'ADS', n: 40, publicada: true, pontos_atividade: 0, fim: '29/11 23:59' },
   ]);
-  // Rascunho não aparece para o aluno.
-  const lista = (await rpc(u.mec, `select public.meus_simulados() j`)).j;
-  assert.ok(lista.every((s) => !s.titulo.endsWith('(prova completa)')));
+  // Aluno de Mecânica vê a prova completa do curso dele (e não as de outros cursos).
+  const lista = (await rpc(u.mec, `select public.meus_simulados() j`)).j.filter((s) => s.titulo.endsWith('(prova completa)'));
+  assert.deepEqual(lista.map((s) => s.curso), ['ENG_MEC']);
 });
 
 test('a prova entrega as figuras e começa pela Formação Geral, sem gabarito', async () => {
